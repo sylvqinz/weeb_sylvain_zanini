@@ -1,16 +1,38 @@
-# React + Vite
+Description du projet :
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dans ce projet, nous aurons pour mission de développer les premières interfaces du site internet de l’entreprise Weeb. Celle-ci souhaite créer un site incluant une partie vitrine, un blog ainsi qu’un espace d’authentification. Nous nous focaliserons sur la partie vitrine durant la première semaine. En effet, l’objectif est de développer les pages Home, Contact et Login. Vous aurez à disposition une maquette réalisée par le client (Weeb) avec ses designers en interne. Le client nous impose toutefois quelques contraintes techniques concernant les outils et les langages à utiliser :
+- React
+- Git
+Vous pourrez utiliser l’IDE de votre choix.
+Nom du repository : weeb_prenom_nom
 
-Currently, two official plugins are available:
+De plus, le client vous demande un rapport expliquant les différents choix effectués(architecture de dossier, librairies installés, fonctionnement de l’application, prise en main du code).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+Ressources à consulter :
+Données : 
+La maquette est disponible sur le lien suivant :
+https://www.figma.com/design/1lngD8hKQ5RXufT50f0VZl/PROJET-Semaine-1?node-id=0-1&t=trAWDyt5VN1qXH69-1
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+Comment corriger ce projet : 
+Les différentes sections développées(fonctionnel)
+Est-ce que tous les éléments sont présents ?
+Les contraintes ont été respectées ? Utilisation de React et react-router ?
+Propreté du code et best practice au niveau de git 
+Indentation
+Commentaires
+Convention de nommage pour variables et commits
+gitflow optimal (issue - nouvelle branche - modifications - PR - validation puis suppression de la branche)        
+Détails au niveau du design
+Responsive(Mobile, Tablette et grand écran)
+Mobile 
+Tablette
+Desktop
+Animations
+Hover
+Focus
+Transitions
+Communication entre développeur - client
+Dev d’éléments supplémentaires(Slider, bande défilante, autre type d’input) 
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
