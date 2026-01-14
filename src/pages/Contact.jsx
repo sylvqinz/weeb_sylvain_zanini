@@ -19,7 +19,7 @@ export default function Contact() {
                 <label className="block text-purple-400 mb-2">Nom</label>
                 <input
                   type="text"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500"
+                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
                 />
               </div>
 
@@ -27,7 +27,7 @@ export default function Contact() {
                 <label className="block text-purple-400 mb-2">Prénom</label>
                 <input
                   type="text"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500"
+                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
                 />
               </div>
             </div>
@@ -38,14 +38,14 @@ export default function Contact() {
                 <label className="block text-purple-400 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500"
+                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
                 />
               </div>
               <div>
                 <label className="block text-purple-400 mb-2">Objet</label>
                 <input
                   type="text"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500"
+                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:border-purple-500 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
                 />
               </div>
             </div>
@@ -55,7 +55,7 @@ export default function Contact() {
               <label className="block text-purple-400 mb-2">Message</label>
               <textarea
                 rows="3"
-                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 resize-none focus:border-purple-500"
+                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 resize-none focus:border-purple-500 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
               />
             </div>
 

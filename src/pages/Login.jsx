@@ -12,7 +12,7 @@ export default function Login() {
             <label className="block text-purple-400 mb-2">Email</label>
             <input
               type="email"
-              className="w-full bg-transparent border-b border-purple-500 text-white outline-none py-2 focus:border-purple-600"
+              className=" w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
             />
           </div>
 
@@ -21,7 +21,7 @@ export default function Login() {
             <label className="block text-purple-400 mb-2">Password</label>
             <input
               type="password"
-              className="w-full bg-transparent border-b border-purple-500 text-white outline-none py-2 focus:border-purple-600"
+              className=" w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
             />
           </div>
 
