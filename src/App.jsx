@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 import ScrollTop from "./components/scrollTop";
-
+import Contact from "./pages/Contact";
 function App() {
   return (
     <div className=" bg-[#0f172a] text-white">
@@ -16,6 +16,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
       <Footer />
