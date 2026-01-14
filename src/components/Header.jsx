@@ -44,7 +44,7 @@ export default function Header() {
           <ul className="hidden md:flex items-center gap-8 text-[16px] text-neutral-300">
             <li>
               <Link to="/about" className="hover:text-white transition">
-                About Us
+                Qui sommes-nous ?
               </Link>
             </li>
             <li>
@@ -57,7 +57,7 @@ export default function Header() {
 
         <div className="flex items-center gap-6">
           <Link to="/login" className="text-[16px] text-neutral-300 hover:text-white transition">
-            Log In
+            Se connecter
           </Link>
 
           <Link
@@ -68,7 +68,7 @@ export default function Header() {
               shadow-lg shadow-purple-600/30
               transition inline-flex items-center justify-center"
           >
-            Join Now
+            S'inscrire
           </Link>
         </div>
       </nav>
