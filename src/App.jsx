@@ -6,9 +6,11 @@ import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 import ScrollTop from "./components/scrollTop";
 import Contact from "./pages/Contact";
+import Login from "./pages/Login";
+
 function App() {
   return (
-    <div className=" bg-[#0f172a] text-white">
+    <div className="bg-[#0f172a] text-white">
       <ScrollTop />
       <Header />
 
@@ -17,6 +19,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+
         </Routes>
       </main>
       <Footer />
