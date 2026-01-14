@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 export default function Home() {
   return (
     <>
@@ -15,19 +15,24 @@ export default function Home() {
           blog vous offre du contenu de qualité pour rester à la pointe.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <button className="bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-[8px] font-medium hover:from-purple-500 hover:to-purple-400 transition">
+          <Link
+            to="/discover"
+            className="bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-[8px] font-medium hover:from-purple-500 hover:to-purple-400 transition"
+          >
             Découvrir les articles
-          </button>
-          <button className="border-[2px] border-white px-8 py-3 rounded-[8px] font-medium hover:border-gray-400 hover:bg-slate-800 transition">
+          </Link>
+          <Link
+            to="/subscribe"
+            className="border-[2px] border-white px-8 py-3 rounded-[8px] font-medium hover:border-gray-400 hover:bg-slate-800 transition"
+          >
             S'abonner à la newsletter
-          </button>
+          </Link>
         </div>
         <div>
           <img src="/assets/Desktop.jpg" alt="Illustration desktop" className="mx-auto mt-16 w-full max-w-4xl" />
         </div>
       </section>
 
-      {/* Trust Section */}
       <section className="px-8 py-16 max-w-6xl mx-auto text-center">
         <h2 className="text-[56px] font-extrabold mb-20">Ils nous font confiance</h2>
         <div className="flex flex-wrap justify-center items-center gap-12 text-[24px] font-bold ">
@@ -54,7 +59,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Learning Section */}
       <section className="px-8 py-20 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -71,12 +75,12 @@ export default function Home() {
               connaissances, nous vous proposons des tutoriels, guides et bonnes pratiques pour apprendre
               efficacement.
             </p>
-            <a
-              href="#"
+            <Link
+              to="/ressources"
               className="inline-flex items-center gap-2 text-purple-400 font-medium hover:gap-3 transition-all"
             >
               Explorer les ressources <span>→</span>
-            </a>
+            </Link>
           </div>
           <div>
             <img src="/assets/Desktop.jpg" alt="Illustration desktop" className="mx-auto mt-16 w-full max-w-4xl" />
@@ -84,7 +88,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trends Section */}
       <section className="px-8 py-20 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
@@ -104,12 +107,13 @@ export default function Home() {
               Chaque semaine, nous analysons les nouveautés du web : frameworks émergents, bonnes pratiques SEO,
               accessibilité, et bien plus encore. Ne manquez aucune actualité du digital !
             </p>
-            <a
+            <Link
+              to="/news"
               href="#"
               className="inline-flex items-center gap-2 text-purple-400 font-medium hover:gap-3 transition-all"
             >
               Lire les articles récents <span>→</span>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
