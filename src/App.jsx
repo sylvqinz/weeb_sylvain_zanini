@@ -6,10 +6,10 @@ import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 function App() {
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
+    <div className=" bg-[#0f172a] text-white">
       <Header />
 
-      <main className="pt-[136px]">
+      <main className="pt-[136px] min-h-screen">
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
