@@ -10,10 +10,8 @@ export default function Header() {
       const currentScroll = window.scrollY;
 
       if (currentScroll > lastScroll && currentScroll > 100) {
-        // on descend → cache le header
         setHidden(true);
       } else {
-        // on remonte → montre le header
         setHidden(false);
       }
 
@@ -38,9 +36,10 @@ export default function Header() {
           boxShadow: "0px 0px 15px 0px #00000012, 0px 25px 50px -12px #00000040",
         }}
       >
-        {/* Left */}
         <div className="flex items-center gap-10">
-          <Link to="/" className="text-[32px] font-bold tracking-wide">weeb</Link>
+          <Link to="/" className="text-[32px] font-bold tracking-wide">
+            weeb
+          </Link>
 
           <ul className="hidden md:flex items-center gap-8 text-[16px] text-neutral-300">
             <li>
@@ -56,7 +55,6 @@ export default function Header() {
           </ul>
         </div>
 
-        {/* Right */}
         <div className="flex items-center gap-6">
           <Link to="/login" className="text-[16px] text-neutral-300 hover:text-white transition">
             Log In
