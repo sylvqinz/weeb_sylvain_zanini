@@ -1,6 +1,6 @@
 export default function Contact() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0b1020] to-[#070b16] flex items-center justify-center px-4">
+    <section className="from-[#0b1020] to-[#070b16] flex items-center justify-center px-4">
       <div className="w-full max-w-3xl text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Votre avis compte !</h1>
 
@@ -11,7 +11,7 @@ export default function Contact() {
         </p>
 
         
-        <div className="border border-purple-500/70 rounded-2xl p-8 bg-white/5 backdrop-blur">
+        <div className="border border-purple-500/70 rounded-2xl p-8 bg-[#20223f] backdrop-blur">
           <form className="space-y-8">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -68,6 +68,6 @@ export default function Contact() {
           </form>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -4,6 +4,14 @@
   --font-sans: "roboto", sans-serif;
 }
 
+section {
+  padding: 5rem;
+}
 
+h1 {
+  font-size: 72px;
+}
 
-
+p {
+  font-size: 18px;
+}
