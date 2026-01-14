@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0F172A]  ">
+    <>
       <section className="px-8 py-20 max-w-6xl mx-auto text-center">
         <h1 className="text-5xl md:text-[72px] font-extrabold mb-6">
           Explorez le <span className="text-purple-400 font-light">Web</span> sous toutes
@@ -15,10 +15,10 @@ export default function Home() {
           blog vous offre du contenu de qualité pour rester à la pointe.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <button className="bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-lg font-medium hover:from-purple-500 hover:to-purple-400 transition">
+          <button className="bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-[8px] font-medium hover:from-purple-500 hover:to-purple-400 transition">
             Découvrir les articles
           </button>
-          <button className="border border-gray-500 px-8 py-3 rounded-lg font-medium hover:border-gray-400 hover:bg-slate-800 transition">
+          <button className="border-[2px] border-white px-8 py-3 rounded-[8px] font-medium hover:border-gray-400 hover:bg-slate-800 transition">
             S'abonner à la newsletter
           </button>
         </div>
@@ -113,6 +113,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

@@ -1,16 +1,18 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Home2 from "./pages/Home2";
-import Home3 from "./pages/home3";
+import Header from "./components/Header";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/home2" element={<Home2 />} />
-      <Route path="/home3" element={<Home3 />} />
-    </Routes>
+    <div className="min-h-screen bg-[#0f172a] text-white">
+      <Header />
+      <main className="pt-[136px]">
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
