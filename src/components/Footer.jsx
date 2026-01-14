@@ -8,20 +8,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 flex-grow">
           <div className="flex-shrink-0 font-bold text-2xl mb-8 md:mb-0">weeb</div>
           <div>
-            <h4 className="text-xs uppercase text-gray-400 mb-4">Product</h4>
+            <h4 className="text-xs uppercase text-gray-400 mb-4">Produit</h4>
 
             <nav className="flex flex-col space-y-2 text-sm">
               <Link to="/pricing" className="hover:text-purple-600 cursor-pointer">
-                Pricing
+                Prix
               </Link>
               <Link to="/overview" className="hover:text-purple-600 cursor-pointer">
-                Overview
+                Aperçu
               </Link>
               <Link to="/browse" className="hover:text-purple-600 cursor-pointer">
-                Browse
+                Parcourir
               </Link>
               <Link to="/accessibility" className="hover:text-purple-600 cursor-pointer">
-                Accessibility
+                Accessibilité
               </Link>
               <Link to="/five" className="hover:text-purple-600 cursor-pointer">
                 Five
@@ -37,48 +37,48 @@ export default function Footer() {
                 Brainstorming
               </Link>
               <Link to="/ideation" className="hover:text-purple-600 cursor-pointer">
-                Ideation
+                Création d'idées
               </Link>
               <Link to="/wireframing" className="hover:text-purple-600 cursor-pointer">
-                Wireframing
+                Maquettage
               </Link>
               <Link to="/research" className="hover:text-purple-600 cursor-pointer">
-                Research
+                Recherche
               </Link>
             </nav>
           </div>
 
           {/* Resources */}
           <div>
-            <h4 className="text-xs uppercase text-gray-400 mb-4">Resources</h4>
+            <h4 className="text-xs uppercase text-gray-400 mb-4">Ressources</h4>
             <nav className="flex flex-col space-y-2 text-sm">
               <Link to="/help-center" className="hover:text-purple-600 cursor-pointer">
-                Help Center
+                Centre d'aide
               </Link>
               <Link to="/blog" className="hover:text-purple-600 cursor-pointer">
                 Blog
               </Link>
               <Link to="/tutorials" className="hover:text-purple-600 cursor-pointer">
-                Tutorials
+                Tutoriels
               </Link>
             </nav>
           </div>
 
           {/* Company */}
           <div>
-            <h4 className="text-xs uppercase text-gray-400 mb-4">Company</h4>
+            <h4 className="text-xs uppercase text-gray-400 mb-4">Entreprise</h4>
             <nav className="flex flex-col space-y-2 text-sm">
               <Link to="/about" className="hover:text-purple-600 cursor-pointer">
-                About
+                À propos
               </Link>
               <Link to="/press" className="hover:text-purple-600 cursor-pointer">
-                Press
+                Diffusions
               </Link>
               <Link to="/events" className="hover:text-purple-600 cursor-pointer">
-                Events
+                Évenements
               </Link>
               <Link to="/careers" className="hover:text-purple-600 cursor-pointer">
-                Careers
+                Carrières
               </Link>
             </nav>
           </div>
@@ -89,7 +89,7 @@ export default function Footer() {
 
       {/* Bottom part */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between items-center gap-6 md:gap-0 text-gray-500 text-sm">
-        <p>© 2026 Weeb, Inc. All rights reserved.</p>
+        <p>© 2026 Weeb, Inc. Tout droit réservés.</p>
 
         <div className="flex space-x-6 text-gray-900 text-lg">
           <a href="#" aria-label="YouTube" className="hover:text-purple-600 transition">
