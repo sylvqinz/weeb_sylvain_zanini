@@ -4,9 +4,12 @@ import Home from "./pages/Home";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
+import ScrollTop from "./components/scrollTop";
+
 function App() {
   return (
     <div className=" bg-[#0f172a] text-white">
+      <ScrollTop />
       <Header />
 
       <main className="pt-[136px] min-h-screen">
