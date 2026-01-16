@@ -2,12 +2,9 @@ export default function Login() {
   return (
     <section className=" flex items-center justify-center px-4">
       <div className=" w-full max-w-3xl text-center">
-        {/* Title */}
         <h1 className=" md:text-4xl font-bold text-white mb-12">Se connecter</h1>
 
-        {/* Form */}
         <form className="space-y-10">
-          {/* Email */}
           <div>
             <label className="block text-purple-400 mb-2">Email</label>
             <input
@@ -16,7 +13,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-purple-400 mb-2">Password</label>
             <input
@@ -25,7 +21,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Button */}
           <button
             type="submit"
             className=" mt-4 bg-purple-600 hover:bg-purple-700 text-white px-10 py-2 rounded-lg transition"
@@ -34,7 +29,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Links */}
         <div className="mt-8 space-y-4 text-sm">
           <p className="text-white cursor-pointer hover:underline">Mot de passe oublié ?</p>
 
