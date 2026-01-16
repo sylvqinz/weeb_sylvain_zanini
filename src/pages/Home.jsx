@@ -1,6 +1,33 @@
-import React from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 export default function Home() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      if (rect.top < windowHeight && rect.bottom > 0) {
+        setIsVisible(true);
+
+        const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + rect.height)));
+        setScrollProgress(progress);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       <section className="px-8 py-20 max-w-6xl mx-auto text-center">
@@ -90,10 +117,35 @@ export default function Home() {
 
       <section className="px-8 py-20 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div>
-            <img src="/assets/Shapes.jpg" alt="Illu" className="mx-auto h-[412px] w-[415px]" />
-          </div>
+          <div ref={containerRef} className="relative  flex items-center justify-center ">
+            <div
+              className="relative w-[500px] h-[500px] transition-all duration-1000"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "scale(1)" : "scale(0.8)",
+              }}
+            >
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute inset-0 border-4 border-purple-500 rounded-lg transition-all duration-300"
+                  style={{
+                    transform: `rotate(${i * 15 + scrollProgress * 360}deg) scale(${1 - i * 0.05})`,
+                    opacity: isVisible ? 0.4 - i * 0.05 : 0,
+                    transitionDelay: `${i * 100}ms`,
+                  }}
+                />
+              ))}
 
+              <div
+                className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 rounded-lg shadow-2xl shadow-pink-500/50 transition-all duration-500"
+                style={{
+                  transform: `translate(-50%, -50%) rotate(${12 + scrollProgress * 180}deg)`,
+                  opacity: isVisible ? 1 : 0,
+                }}
+              />
+            </div>
+          </div>
           <div className="order-1 md:order-2">
             <p className="text-sm font-semibold mb-3 tracking-[3px]">
               LE WEB, UN ÉCOSYSTÈME EN CONSTANTE ÉVOLUTION
