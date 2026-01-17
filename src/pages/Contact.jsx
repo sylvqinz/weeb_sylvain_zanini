@@ -1,6 +1,6 @@
 export default function Contact() {
   return (
-    <section className="from-[#0b1020] to-[#070b16] flex items-center justify-center px-4">
+    <section className="from-[#0b1020] to-[#070b16] flex items-center justify-center px-4 pb-20">
       <div className="w-full max-w-3xl text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Votre avis compte !</h1>
 

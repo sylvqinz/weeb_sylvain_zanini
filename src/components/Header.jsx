@@ -46,11 +46,11 @@ export default function Header() {
           </Link>
 
           <ul className="hidden md:flex items-center gap-8 text-[16px] text-neutral-300">
-            <li>
+            {/* <li>
               <Link to="/about" className="hover:text-white transition">
                 Qui sommes-nous ?
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link to="/contact" className="hover:text-white transition">
                 Contact
@@ -104,11 +104,11 @@ export default function Header() {
         }}
       >
         <ul className="flex flex-col gap-6 p-8 text-[16px] text-neutral-300">
-          <li>
+          {/* <li>
             <Link to="/about" className="hover:text-white transition block" onClick={closeMenu}>
               Qui sommes-nous ?
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/contact" className="hover:text-white transition block" onClick={closeMenu}>
               Contact
