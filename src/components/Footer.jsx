@@ -29,7 +29,7 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Solutions */}
+
           <div>
             <h4 className="text-xs uppercase text-gray-400 mb-4">Solutions</h4>
             <nav className="flex flex-col space-y-2 text-sm">
@@ -48,7 +48,7 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Resources */}
+
           <div>
             <h4 className="text-xs uppercase text-gray-400 mb-4">Ressources</h4>
             <nav className="flex flex-col space-y-2 text-sm">
@@ -64,7 +64,7 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Company */}
+
           <div>
             <h4 className="text-xs uppercase text-gray-400 mb-4">Entreprise</h4>
             <nav className="flex flex-col space-y-2 text-sm">
@@ -87,7 +87,7 @@ export default function Footer() {
 
       <hr className="my-10 border-gray-200" />
 
-      {/* Bottom part */}
+
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between items-center gap-6 md:gap-0 text-gray-500 text-sm">
         <p>© 2026 Weeb, Inc. Tout droit réservés.</p>
 
