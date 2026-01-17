@@ -10,10 +10,8 @@ export default function Contact() {
           plus utile et enrichissante.
         </p>
 
-        
         <div className="border border-purple-500/70 rounded-2xl p-8 bg-[#20223f] backdrop-blur">
           <form className="space-y-8">
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-purple-400 mb-2">Nom</label>
@@ -32,7 +30,6 @@ export default function Contact() {
               </div>
             </div>
 
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-purple-400 mb-2">Email</label>
@@ -50,7 +47,6 @@ export default function Contact() {
               </div>
             </div>
 
-         
             <div>
               <label className="block text-purple-400 mb-2">Message</label>
               <textarea

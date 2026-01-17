@@ -29,12 +29,12 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed w-full flex justify-center pt-5 z-50 transition-transform duration-450 ${
+      className={`fixed w-full flex justify-center lg:pt-5 z-50 transition-transform duration-450 ${
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
       <nav
-        className="relative flex items-center justify-between h-[96px] w-[1000px] max-w-6xl px-8 py-4 rounded-[20px]
+        className="relative flex items-center justify-between h-[96px] w-[1000px] max-w-6xl px-8 py-4 lg:rounded-[20px]
           bg-[#19202f]"
         style={{
           boxShadow: "0px 0px 15px 0px #00000012, 0px 25px 50px -12px #00000040",
