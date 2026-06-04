@@ -15,6 +15,7 @@ export type AdminUser = AuthUser & {
 
 type UsersResponse = AdminUser[] | { results?: AdminUser[]; users?: AdminUser[]; data?: AdminUser[] };
 
+// Accepte une liste directe ou une reponse paginee/encapsulee du backend.
 function normalizeUsers(data: UsersResponse) {
   if (Array.isArray(data)) {
     return data;

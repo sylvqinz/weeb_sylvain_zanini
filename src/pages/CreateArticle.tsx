@@ -11,6 +11,7 @@ export default function CreateArticle() {
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(Boolean(slug));
+  // La meme page sert a creer ou modifier selon la presence du slug dans l'URL.
   const isEditing = Boolean(slug);
 
   useEffect(() => {

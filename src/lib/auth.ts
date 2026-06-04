@@ -60,6 +60,7 @@ export function extractAuthUser(data: AuthResponse) {
   return data.user && typeof data.user === "object" ? (data.user as AuthUser) : null;
 }
 
+// Fallback utile quand /users/ echoue mais que le JWT contient deja des infos utilisateur.
 export function getCurrentUserClaims() {
   const token = getAccessToken();
 

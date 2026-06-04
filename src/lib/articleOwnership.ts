@@ -62,6 +62,7 @@ function getCurrentUserValues(user: AuthUser | null) {
   return values;
 }
 
+// Le backend peut exposer le proprietaire sous differents noms selon l'endpoint.
 function getArticleOwnerValues(article: Article) {
   const values = new Set<string>();
 

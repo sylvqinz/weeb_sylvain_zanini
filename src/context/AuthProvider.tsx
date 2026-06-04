@@ -19,6 +19,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     let ignore = false;
 
+    // Au chargement, on rehydrate la session depuis l'access token ou le refresh cookie.
     async function initializeSession() {
       if (hasAccessToken()) {
         try {

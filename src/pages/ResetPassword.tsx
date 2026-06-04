@@ -10,6 +10,7 @@ export default function ResetPassword() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Le lien email contient uidb64 et token; sans eux, on affiche la demande d'email.
   const params = new URLSearchParams(window.location.search);
   const uidb64 = params.get("uidb64");
   const token = params.get("token");

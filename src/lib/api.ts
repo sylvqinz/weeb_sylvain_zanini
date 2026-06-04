@@ -23,6 +23,7 @@ export function clearAccessToken() {
   sessionStorage.removeItem("access");
 }
 
+// Le backend peut renvoyer plusieurs formats d'erreurs; on les reduit en message lisible.
 export function formatErrorMessage(data: unknown): string {
   if (!data || typeof data !== "object") {
     return "Une erreur est survenue pendant la requête.";
@@ -113,6 +114,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Sur un 401, on tente une seule fois de recuperer un access token via le cookie refresh.
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

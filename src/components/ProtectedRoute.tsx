@@ -6,6 +6,7 @@ type ProtectedRouteProps = {
   children: ReactNode;
 };
 
+// Routes publiques et routes reservees aux visiteurs non connectes.
 const publicRoutes = ["/", "/contact", "/login", "/signup", "/blog", "/blog/:slug", "/reset-password"];
 const guestOnlyRoutes = ["/login", "/signup"];
 
