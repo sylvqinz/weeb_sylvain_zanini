@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import useObserver from "../hooks/useObserver";
 import useScroll from "../hooks/useScroll";
@@ -12,13 +12,13 @@ const logos = [
 ];
 
 export default function Home() {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, scrollVisible] = useScroll(containerRef);
   const [logosRef, logosVisible] = useObserver(0.2, true);
 
   return (
     <>
-      <section className="px-8 py-20 max-w-6xl mx-auto text-center">
+      <section className="px-8 max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
           Explorez le <span className="text-purple-400">Web</span> sous toutes ses{" "}
           <span className="underline decoration-4 decoration-purple-400 underline-offset-12">facettes</span>
@@ -32,8 +32,8 @@ export default function Home() {
 
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
-            to="/discover"
-            className="bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-lg font-medium hover:from-purple-500 hover:to-purple-400 transition"
+            to="/blog"
+            className="border-2 border-transparent bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-lg font-medium hover:from-purple-500 hover:to-purple-400 transition"
           >
             Découvrir les articles
           </Link>

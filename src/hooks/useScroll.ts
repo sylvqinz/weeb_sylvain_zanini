@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, type RefObject } from "react";
 
-export default function useScrollProgress(ref) {
+export default function useScrollProgress(ref: RefObject<HTMLElement | null>): [number, boolean] {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
