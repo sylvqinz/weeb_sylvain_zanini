@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [
     tailwindcss(), // Ajoutez le plugin tailwindcss ici
     react()
+    base: '/weeb_sylvain_zanini/'
 ],
 })
