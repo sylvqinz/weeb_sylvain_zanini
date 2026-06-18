@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import useObserver from "../hooks/useObserver";
 import useScroll from "../hooks/useScroll";
 
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 const logos = [
-  { img: "/assets/smartFinder_logo.svg", name: "SmartFinder" },
-  { img: "/assets/zoomer_logo.svg", name: "Zoomer" },
-  { img: "/assets/shells_logo.svg", name: "SHELLS" },
-  { img: "/assets/waves_logo.svg", name: "WAVES" },
-  { img: "/assets/artVenue_logo.svg", name: "ArtVenue" },
+  { img: assetPath("assets/smartFinder_logo.svg"), name: "SmartFinder" },
+  { img: assetPath("assets/zoomer_logo.svg"), name: "Zoomer" },
+  { img: assetPath("assets/shells_logo.svg"), name: "SHELLS" },
+  { img: assetPath("assets/waves_logo.svg"), name: "WAVES" },
+  { img: assetPath("assets/artVenue_logo.svg"), name: "ArtVenue" },
 ];
 
 export default function Home() {
@@ -46,7 +48,7 @@ export default function Home() {
         </div>
 
         <img
-          src="/assets/Desktop.jpg"
+          src={assetPath("assets/Desktop.jpg")}
           alt="Illustration desktop"
           className="mx-auto mt-16 w-full max-w-4xl"
           loading="lazy"
@@ -93,7 +95,7 @@ export default function Home() {
             </Link>
           </div>
           <img
-            src="/assets/Desktop.jpg"
+            src={assetPath("assets/Desktop.jpg")}
             alt="Ressources d'apprentissage"
             className="w-full max-w-4xl"
             loading="lazy"
