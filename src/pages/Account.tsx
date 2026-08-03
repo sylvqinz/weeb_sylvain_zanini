@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 import { useAuth } from "../hooks/useAuth";
-import { isCurrentUserArticle } from "../lib/articleOwnership";
 import { type AuthUser } from "../lib/auth";
-import { type Article, deleteArticle, fetchArticles } from "../lib/articles";
+import {
+  type Article,
+  type FavoriteUpdate,
+  deleteArticle,
+  fetchMyArticles,
+  fetchMyFavorites,
+} from "../lib/articles";
 
 function getUserField(user: AuthUser | null, key: string) {
   const value = user?.[key];
@@ -47,11 +53,82 @@ function formatDate(value: string | undefined) {
   return date.toLocaleDateString();
 }
 
+type AccountArticleCardProps = {
+  article: Article;
+  canManage?: boolean;
+  deletingSlug: string | null;
+  onDelete: (slug: string) => void;
+  onFavoriteChange: (article: Article, update: FavoriteUpdate) => void;
+};
+
+function AccountArticleCard({
+  article,
+  canManage = false,
+  deletingSlug,
+  onDelete,
+  onFavoriteChange,
+}: AccountArticleCardProps) {
+  const slug = article.slug;
+  const createdAt = formatDate(article.created_at);
+  const updatedAt = formatDate(article.updated_at);
+
+  return (
+    <article className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
+      <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h3 className="text-xl font-semibold">{article.title || "Article sans titre"}</h3>
+          {(createdAt || updatedAt) && (
+            <p className="mt-2 text-sm text-gray-400">
+              {createdAt && <span>Publié le {createdAt}</span>}
+              {createdAt && updatedAt && <span> - </span>}
+              {updatedAt && <span>Modifié le {updatedAt}</span>}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <p className="text-gray-300 line-clamp-3">{getArticlePreview(article)}</p>
+
+      <div className="mt-6 flex flex-wrap items-start gap-4">
+        {slug ? (
+          <>
+            <Link to={`/blog/${slug}`} className="py-2 text-purple-300 hover:text-purple-200 transition">
+              Voir
+            </Link>
+            {canManage && (
+              <>
+                <Link to={`/articles/${slug}/edit`} className="py-2 text-purple-300 hover:text-purple-200 transition">
+                  Modifier
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => onDelete(slug)}
+                  disabled={deletingSlug === slug}
+                  className="py-2 text-red-200 hover:text-red-100 disabled:opacity-60 transition"
+                >
+                  {deletingSlug === slug ? "Suppression..." : "Supprimer"}
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <p className="text-sm text-gray-400">Slug indisponible</p>
+        )}
+
+        <FavoriteButton article={article} onChange={(update) => onFavoriteChange(article, update)} />
+      </div>
+    </article>
+  );
+}
+
 export default function Account() {
   const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
+  const [favorites, setFavorites] = useState<Article[]>([]);
+  const [loadingArticles, setLoadingArticles] = useState(true);
+  const [loadingFavorites, setLoadingFavorites] = useState(true);
+  const [articlesMessage, setArticlesMessage] = useState("");
+  const [favoritesMessage, setFavoritesMessage] = useState("");
   const [actionMessage, setActionMessage] = useState("");
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
@@ -60,29 +137,47 @@ export default function Account() {
 
     async function loadUserArticles() {
       try {
-        const data = await fetchArticles();
-        const userArticles = Array.isArray(data) ? data.filter((article) => isCurrentUserArticle(article, user)) : [];
+        const data = await fetchMyArticles();
 
         if (!ignore) {
-          setArticles(userArticles);
+          setArticles(Array.isArray(data) ? data : []);
         }
       } catch (error) {
         if (!ignore) {
-          setMessage(error instanceof Error ? error.message : "Impossible de charger vos publications.");
+          setArticlesMessage(error instanceof Error ? error.message : "Impossible de charger vos articles.");
         }
       } finally {
         if (!ignore) {
-          setLoading(false);
+          setLoadingArticles(false);
         }
       }
     }
 
-    loadUserArticles();
+    async function loadUserFavorites() {
+      try {
+        const data = await fetchMyFavorites();
+
+        if (!ignore) {
+          setFavorites(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setFavoritesMessage(error instanceof Error ? error.message : "Impossible de charger vos favoris.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoadingFavorites(false);
+        }
+      }
+    }
+
+    void loadUserArticles();
+    void loadUserFavorites();
 
     return () => {
       ignore = true;
     };
-  }, [user]);
+  }, []);
 
   const profileRows = useMemo(
     () => [
@@ -91,6 +186,28 @@ export default function Account() {
     ],
     [user],
   );
+
+  function handleFavoriteChange(article: Article, update: FavoriteUpdate) {
+    const updatedArticle = { ...article, ...update };
+
+    setArticles((currentArticles) =>
+      currentArticles.map((currentArticle) =>
+        currentArticle.slug === article.slug ? { ...currentArticle, ...update } : currentArticle,
+      ),
+    );
+
+    setFavorites((currentFavorites) => {
+      if (!update.is_favorite) {
+        return currentFavorites.filter((favorite) => favorite.slug !== article.slug);
+      }
+
+      const alreadyListed = currentFavorites.some((favorite) => favorite.slug === article.slug);
+
+      return alreadyListed
+        ? currentFavorites.map((favorite) => (favorite.slug === article.slug ? { ...favorite, ...update } : favorite))
+        : [updatedArticle, ...currentFavorites];
+    });
+  }
 
   async function handleDelete(slug: string) {
     if (!window.confirm("Supprimer cette publication ?")) {
@@ -103,6 +220,7 @@ export default function Account() {
     try {
       await deleteArticle(slug);
       setArticles((currentArticles) => currentArticles.filter((article) => article.slug !== slug));
+      setFavorites((currentFavorites) => currentFavorites.filter((article) => article.slug !== slug));
       setActionMessage("Publication supprimée.");
     } catch (error) {
       setActionMessage(error instanceof Error ? error.message : "Impossible de supprimer cette publication.");
@@ -143,78 +261,77 @@ export default function Account() {
             ))}
           </dl>
 
-          <div className="mt-8 border-t border-purple-500/30 pt-6">
-            <p className="text-sm text-gray-400">Publications</p>
-            <p className="mt-1 text-3xl font-bold text-purple-300">{articles.length}</p>
+          <div className="mt-8 grid grid-cols-2 gap-4 border-t border-purple-500/30 pt-6">
+            <div>
+              <p className="text-sm text-gray-400">Articles</p>
+              <p className="mt-1 text-3xl font-bold text-purple-300">{articles.length}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-400">Favoris</p>
+              <p className="mt-1 text-3xl font-bold text-pink-300">{favorites.length}</p>
+            </div>
           </div>
         </aside>
 
-        <div>
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-semibold">Mes publications</h2>
-            {loading && <p className="text-sm text-purple-300">Chargement...</p>}
+        <div className="space-y-12">
+          {actionMessage && <p className="text-sm text-purple-300">{actionMessage}</p>}
+
+          <div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-semibold">Mes articles</h2>
+              {loadingArticles && <p className="text-sm text-purple-300">Chargement...</p>}
+            </div>
+
+            {articlesMessage && <p className="text-purple-300">{articlesMessage}</p>}
+
+            {!loadingArticles && !articlesMessage && articles.length === 0 && (
+              <div className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
+                <p className="text-gray-300 mb-5">Vous n'avez pas encore publié d'article.</p>
+                <Link to="/articles/new" className="text-purple-300 hover:text-purple-200 transition">
+                  Créer votre premier article
+                </Link>
+              </div>
+            )}
+
+            <div className="grid gap-5">
+              {articles.map((article) => (
+                <AccountArticleCard
+                  key={article.slug || article.title}
+                  article={article}
+                  canManage
+                  deletingSlug={deletingSlug}
+                  onDelete={handleDelete}
+                  onFavoriteChange={handleFavoriteChange}
+                />
+              ))}
+            </div>
           </div>
 
-          {message && <p className="text-purple-300">{message}</p>}
-          {actionMessage && <p className="mb-5 text-sm text-purple-300">{actionMessage}</p>}
-
-          {!loading && !message && articles.length === 0 && (
-            <div className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
-              <p className="text-gray-300 mb-5">Vous n'avez pas encore publié d'article.</p>
-              <Link to="/articles/new" className="text-purple-300 hover:text-purple-200 transition">
-                Créer votre première publication
-              </Link>
+          <div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-semibold">Mes favoris</h2>
+              {loadingFavorites && <p className="text-sm text-purple-300">Chargement...</p>}
             </div>
-          )}
 
-          <div className="grid gap-5">
-            {articles.map((article) => {
-              const slug = article.slug;
-              const createdAt = formatDate(article.created_at);
-              const updatedAt = formatDate(article.updated_at);
+            {favoritesMessage && <p className="text-purple-300">{favoritesMessage}</p>}
 
-              return (
-                <article key={slug || article.title} className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
-                  <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{article.title || "Article sans titre"}</h3>
-                      {(createdAt || updatedAt) && (
-                        <p className="mt-2 text-sm text-gray-400">
-                          {createdAt && <span>Publié le {createdAt}</span>}
-                          {createdAt && updatedAt && <span> - </span>}
-                          {updatedAt && <span>Modifié le {updatedAt}</span>}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+            {!loadingFavorites && !favoritesMessage && favorites.length === 0 && (
+              <div className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
+                <p className="text-gray-300">Vous n'avez pas encore d'article favori.</p>
+              </div>
+            )}
 
-                  <p className="text-gray-300 line-clamp-3">{getArticlePreview(article)}</p>
-
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    {slug ? (
-                      <>
-                        <Link to={`/blog/${slug}`} className="text-purple-300 hover:text-purple-200 transition">
-                          Voir
-                        </Link>
-                        <Link to={`/articles/${slug}/edit`} className="text-purple-300 hover:text-purple-200 transition">
-                          Modifier
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(slug)}
-                          disabled={deletingSlug === slug}
-                          className="text-red-200 hover:text-red-100 disabled:opacity-60 transition"
-                        >
-                          {deletingSlug === slug ? "Suppression..." : "Supprimer"}
-                        </button>
-                      </>
-                    ) : (
-                      <p className="text-sm text-gray-400">Slug indisponible</p>
-                    )}
-                  </div>
-                </article>
-              );
-            })}
+            <div className="grid gap-5">
+              {favorites.map((article) => (
+                <AccountArticleCard
+                  key={article.slug || article.title}
+                  article={article}
+                  deletingSlug={deletingSlug}
+                  onDelete={handleDelete}
+                  onFavoriteChange={handleFavoriteChange}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

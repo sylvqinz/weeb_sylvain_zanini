@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 import { useAuth } from "../hooks/useAuth";
 import { type Article, deleteArticle, fetchArticle } from "../lib/articles";
 import { canManageArticle, getAuthorName } from "../lib/articleOwnership";
@@ -108,6 +109,13 @@ export default function BlogDetail() {
 
       <div className="prose prose-invert max-w-none text-gray-200 whitespace-pre-line">
         {content || "Cet article ne contient pas encore de contenu."}
+      </div>
+
+      <div className="mt-8">
+        <FavoriteButton
+          article={article}
+          onChange={(update) => setArticle((currentArticle) => currentArticle && { ...currentArticle, ...update })}
+        />
       </div>
 
       {actionMessage && <p className="mt-8 text-sm text-purple-300">{actionMessage}</p>}

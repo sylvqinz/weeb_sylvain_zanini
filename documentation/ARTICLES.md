@@ -21,6 +21,8 @@ Le type `Article` accepte plusieurs formats possibles venant du backend :
 - `excerpt`
 - `created_at`
 - `updated_at`
+- `is_favorite`
+- `favorites_count`
 - `author`
 
 Le champ `author` peut etre une chaine ou un objet utilisateur.
@@ -35,6 +37,8 @@ Le champ `author` peut etre une chaine ou un objet utilisateur.
 | Edition complete | `PUT` | `/articles/:slug/` |
 | Edition partielle | `PATCH` | `/articles/:slug/` |
 | Suppression | `DELETE` | `/articles/:slug/` |
+| Ajouter aux favoris | `POST` | `/articles/:slug/favorite/` |
+| Retirer des favoris | `DELETE` | `/articles/:slug/favorite/` |
 
 ## Page Blog
 
@@ -48,6 +52,10 @@ Elle affiche :
 - une carte par article.
 
 Si l'utilisateur est connecte, un bouton `Créer un article` apparait.
+
+Chaque carte utilise `is_favorite` et `favorites_count`. Le bouton appelle la
+route d'ajout ou de retrait selon la valeur de `is_favorite`, puis remplace ces
+deux champs localement avec la reponse de l'API.
 
 ## Detail d'article
 
@@ -67,6 +75,9 @@ Si l'utilisateur peut gerer l'article, elle affiche aussi :
 
 - `Modifier`
 - `Supprimer`
+
+Le detail expose le meme bouton de favori et la meme mise a jour locale que les
+cartes de la liste.
 
 ## Creation et edition
 
@@ -97,4 +108,3 @@ Il teste plusieurs champs pour rester compatible avec differents formats backend
 
 - l'utilisateur est actif ;
 - et il est admin ou proprietaire de l'article.
-

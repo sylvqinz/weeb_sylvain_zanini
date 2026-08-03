@@ -14,8 +14,9 @@ La page affiche :
 
 - le nom de l'utilisateur ;
 - son email ;
-- le nombre de publications associees ;
-- la liste de ses articles.
+- le nombre de ses articles et de ses favoris ;
+- la liste de ses articles ;
+- la liste de ses favoris.
 
 ## Identification de l'utilisateur
 
@@ -28,15 +29,20 @@ Le nom est construit avec :
 
 Cette logique est dans `getUserName`.
 
-## Articles personnels
+## Articles personnels et favoris
 
-La page charge tous les articles avec `fetchArticles()`, puis filtre ceux de l'utilisateur courant avec :
+La page charge directement les deux listes avec les routes authentifiees :
 
-```ts
-isCurrentUserArticle(article, user)
+```txt
+GET /users/me/articles/
+GET /users/me/favorites/
 ```
 
-Cette fonction compare plusieurs champs d'identite pour etre compatible avec plusieurs formes de backend.
+Le client API ajoute automatiquement l'en-tete suivant a ces requetes :
+
+```txt
+Authorization: Bearer <access_token>
+```
 
 ## Actions
 
@@ -54,3 +60,6 @@ DELETE /articles/:slug/
 
 et retire ensuite l'article de l'etat local.
 
+Les cartes des deux listes permettent egalement d'ajouter ou de retirer un
+favori. La reponse remplace localement `is_favorite` et `favorites_count` ; un
+article retire des favoris disparait immediatement de la liste correspondante.

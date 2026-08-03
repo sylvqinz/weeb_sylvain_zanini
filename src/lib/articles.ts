@@ -8,8 +8,15 @@ export type Article = {
   excerpt?: string;
   created_at?: string;
   updated_at?: string;
+  is_favorite?: boolean;
+  favorites_count?: number;
   author?: string | { id?: string | number; username?: string; email?: string; first_name?: string; last_name?: string };
   [key: string]: unknown;
+};
+
+export type FavoriteUpdate = {
+  is_favorite: boolean;
+  favorites_count: number;
 };
 
 export type ArticlePayload = {
@@ -24,6 +31,26 @@ export function fetchArticles() {
 
 export function fetchArticle(slug: string) {
   return request<Article>(`/articles/${slug}/`);
+}
+
+export function fetchMyArticles() {
+  return request<Article[]>("/users/me/articles/");
+}
+
+export function fetchMyFavorites() {
+  return request<Article[]>("/users/me/favorites/");
+}
+
+export function favoriteArticle(slug: string) {
+  return request<FavoriteUpdate>(`/articles/${slug}/favorite/`, {
+    method: "POST",
+  });
+}
+
+export function unfavoriteArticle(slug: string) {
+  return request<FavoriteUpdate>(`/articles/${slug}/favorite/`, {
+    method: "DELETE",
+  });
 }
 
 export function createArticle(payload: ArticlePayload) {

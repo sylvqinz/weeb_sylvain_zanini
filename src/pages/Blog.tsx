@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 import { useAuth } from "../hooks/useAuth";
 import { type Article, fetchArticles } from "../lib/articles";
 
@@ -74,13 +75,25 @@ export default function Blog() {
             <article key={slug || article.title} className="border border-purple-500/50 rounded-lg p-6 bg-[#20223f]">
               <h2 className="text-2xl font-semibold mb-3">{article.title || "Article sans titre"}</h2>
               <p className="text-gray-300 mb-6 line-clamp-3">{getArticleText(article)}</p>
-              {slug ? (
-                <Link to={`/blog/${slug}`} className="text-purple-400 font-medium hover:text-purple-300 transition">
-                  Lire l'article
-                </Link>
-              ) : (
-                <p className="text-sm text-gray-400">Slug indisponible</p>
-              )}
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                {slug ? (
+                  <Link to={`/blog/${slug}`} className="py-2 text-purple-400 font-medium hover:text-purple-300 transition">
+                    Lire l'article
+                  </Link>
+                ) : (
+                  <p className="text-sm text-gray-400">Slug indisponible</p>
+                )}
+                <FavoriteButton
+                  article={article}
+                  onChange={(update) => {
+                    setArticles((currentArticles) =>
+                      currentArticles.map((currentArticle) =>
+                        currentArticle.slug === slug ? { ...currentArticle, ...update } : currentArticle,
+                      ),
+                    );
+                  }}
+                />
+              </div>
             </article>
           );
         })}
