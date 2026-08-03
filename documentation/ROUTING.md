@@ -14,11 +14,13 @@ Les routes sont declarees dans `src/App.tsx` avec `Routes` et `Route` de `react-
 | `/contact` | `Contact` | public |
 | `/login` | `Login` | invite uniquement |
 | `/signup` | `Signup` | invite uniquement |
+| `/confirm-email-change` | `ConfirmEmailChange` | public |
 | `/blog` | `Blog` | public |
 | `/blog/:slug` | `BlogDetail` | public |
 | `/articles/new` | `CreateArticle` | connecte |
 | `/articles/:slug/edit` | `CreateArticle` | connecte |
 | `/account` | `Account` | connecte |
+| `/account/settings` | `AccountSettings` | connecte |
 | `/admin` | `AdminDashboard` | admin |
 | `/reset-password` | `ResetPassword` | public |
 | `*` | `NotFound` | public |
@@ -62,4 +64,3 @@ Certaines URLs apparaissent dans le footer ou la homepage, mais ne sont pas decl
 - `/news`
 
 Ces liens tomberont actuellement sur la page 404 tant que les routes correspondantes ne sont pas creees.
-

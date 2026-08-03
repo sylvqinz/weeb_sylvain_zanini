@@ -70,7 +70,8 @@ Il est utilise pour les endpoints publics comme :
 - login ;
 - register ;
 - password reset request ;
-- password reset confirm.
+- password reset confirm ;
+- confirmation de changement d'email.
 
 ## `request`
 
@@ -83,3 +84,29 @@ En cas d'erreur Axios, il transforme la reponse backend en message lisible avec 
 Les erreurs sont representees par `ApiError`, qui conserve aussi le code metier
 du backend. `isApiErrorCode` permet notamment de distinguer
 `INVALID_TWO_FACTOR_CODE` et `TWO_FACTOR_TOKEN_EXPIRED` dans l'interface.
+
+`ApiError` conserve egalement `details` quand le backend renvoie une liste dans
+`details`. Ce champ est utilise pour afficher les messages de `WEAK_PASSWORD`
+sous le champ de nouveau mot de passe.
+
+## Endpoints compte
+
+Le client auth expose notamment :
+
+```txt
+PATCH /users/
+POST /users/email-change/confirm/
+```
+
+`PATCH /users/` est utilise pour les modifications de profil et de mot de
+passe.
+
+`POST /users/email-change/confirm/` est appele depuis
+`/confirm-email-change?token=...` avec :
+
+```json
+{
+  "token": "...",
+  "current_password": "MotDePasseActuel123!"
+}
+```

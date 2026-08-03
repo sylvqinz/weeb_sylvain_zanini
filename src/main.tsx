@@ -11,9 +11,12 @@ if (!root) {
   throw new Error("Root element not found");
 }
 
+const configuredBaseName = import.meta.env.BASE_URL;
+const routerBaseName = window.location.pathname.startsWith(configuredBaseName) ? configuredBaseName : "/";
+
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <BrowserRouter basename={routerBaseName}>
       <AuthProvider>
         <App />
       </AuthProvider>

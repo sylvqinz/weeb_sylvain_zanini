@@ -8,10 +8,12 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import Signup from "./pages/Signup";
+import ConfirmEmailChange from "./pages/ConfirmEmailChange";
 import Blog from "./pages/Blog";
 import BlogDetail from "./pages/BlogDetail";
 import CreateArticle from "./pages/CreateArticle";
 import Account from "./pages/Account";
+import AccountSettings from "./pages/AccountSettings";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -29,11 +31,13 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/articles/new" element={<CreateArticle />} />
             <Route path="/articles/:slug/edit" element={<CreateArticle />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/account/settings" element={<AccountSettings />} />
             <Route
               path="/admin"
               element={

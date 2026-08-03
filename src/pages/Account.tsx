@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { FiSettings } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import FavoriteButton from "../components/FavoriteButton";
-import TwoFactorSettings from "../components/TwoFactorSettings";
 import { useAuth } from "../hooks/useAuth";
 import { type AuthUser } from "../lib/auth";
 import {
@@ -248,9 +248,20 @@ export default function Account() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,360px)_1fr]">
         <aside className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6 h-fit">
-          <div className="mb-6">
-            <p className="text-sm uppercase tracking-[2px] text-purple-300 mb-2">Profil</p>
-            <h2 className="text-2xl font-semibold">{getUserName(user)}</h2>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[2px] text-purple-300 mb-2">Profil</p>
+              <h2 className="text-2xl font-semibold">{getUserName(user)}</h2>
+            </div>
+
+            <Link
+              to="/account/settings"
+              aria-label="Paramètres du compte"
+              title="Paramètres du compte"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-purple-500/50 text-purple-200 transition hover:bg-purple-500/10 hover:text-white"
+            >
+              <FiSettings aria-hidden="true" className="h-5 w-5" />
+            </Link>
           </div>
 
           <dl className="space-y-5">
@@ -275,8 +286,6 @@ export default function Account() {
         </aside>
 
         <div className="space-y-12">
-          <TwoFactorSettings />
-
           {actionMessage && <p className="text-sm text-purple-300">{actionMessage}</p>}
 
           <div>

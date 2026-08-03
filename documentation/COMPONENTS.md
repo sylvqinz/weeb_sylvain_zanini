@@ -45,6 +45,23 @@ Role :
 - rediriger les utilisateurs non connectes vers `/login` pour les routes privees ;
 - rediriger un utilisateur connecte hors de `/login` et `/signup`.
 
+La route `/confirm-email-change` est publique pour permettre l'ouverture du
+lien envoye par email avant ou apres connexion.
+
+## `TwoFactorSettings`
+
+Fichier : `src/components/TwoFactorSettings.tsx`
+
+Role :
+
+- afficher l'etat de la double authentification ;
+- initialiser la configuration TOTP ;
+- afficher le QR code et la cle manuelle ;
+- confirmer l'activation avec un code a six chiffres ;
+- desactiver la 2FA avec un code TOTP.
+
+Le composant est affiche dans `src/pages/AccountSettings.tsx`.
+
 ## `AdminRoute`
 
 Fichier : `src/components/AdminRoute.tsx`
@@ -63,4 +80,3 @@ Role :
 
 - ecouter le changement de `pathname` ;
 - replacer la fenetre en haut de page avec `window.scrollTo(0, 0)`.
-

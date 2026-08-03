@@ -6,7 +6,8 @@ L'authentification est geree par :
 - `src/context/auth-context.ts`
 - `src/context/AuthProvider.tsx`
 - `src/hooks/useAuth.ts`
-- les pages `Login`, `Signup` et `ResetPassword`
+- les pages `Login`, `Signup`, `ResetPassword`, `AccountSettings` et
+  `ConfirmEmailChange`
 
 ## Types principaux
 
@@ -28,6 +29,28 @@ L'authentification est geree par :
   password_confirm: string;
   first_name: string;
   last_name: string;
+}
+```
+
+`UpdateProfilePayload` :
+
+```ts
+{
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  current_password?: string;
+  password?: string;
+  password_confirm?: string;
+}
+```
+
+`ConfirmEmailChangePayload` :
+
+```ts
+{
+  token: string;
+  current_password: string;
 }
 ```
 
@@ -116,6 +139,8 @@ Si le refresh echoue, le token local est supprime.
 - `login`
 - `verifyTwoFactorLogin`
 - `register`
+- `updateProfile`
+- `confirmEmailChange`
 - `setupTwoFactor`
 - `confirmTwoFactor`
 - `disableTwoFactor`
@@ -128,6 +153,82 @@ Au montage, il initialise la session :
 - sinon, il tente un refresh token ;
 - quand la verification est terminee, `checking` passe a `false`.
 
+## Parametres du compte
+
+La fonction `updateProfile(payload)` appelle :
+
+```txt
+PATCH /users/
+```
+
+Elle est utilisee depuis `/account/settings` pour :
+
+- modifier le prenom et le nom ;
+- demander un changement d'email ;
+- modifier le mot de passe.
+
+Apres succes, si le backend renvoie `user`, `AuthProvider` remplace
+l'utilisateur local par cette valeur.
+
+### Changement d'email
+
+Depuis les parametres, le front envoie la nouvelle adresse via `PATCH /users/`.
+Le backend envoie un email a l'adresse actuelle avec un lien vers :
+
+```txt
+/confirm-email-change?token=...
+```
+
+La page `ConfirmEmailChange` lit le token dans l'URL, demande le mot de passe
+actuel, puis appelle :
+
+```txt
+POST /users/email-change/confirm/
+```
+
+Payload :
+
+```ts
+{
+  token: string;
+  current_password: string;
+}
+```
+
+Si la confirmation renvoie `user` et que l'utilisateur est connecte,
+`AuthProvider` met a jour le user local. Le token d'acces existant reste
+utilisable jusqu'a expiration ; le prochain login devra utiliser le nouvel
+email.
+
+### Changement de mot de passe
+
+Le formulaire de mot de passe est separe du formulaire profil et demande
+d'abord le mot de passe actuel.
+
+Payload envoye a `PATCH /users/` :
+
+```ts
+{
+  current_password: string;
+  password: string;
+  password_confirm: string;
+}
+```
+
+Apres succes, l'utilisateur reste connecte.
+
+Erreurs metier gerees :
+
+- `EMAIL_ALREADY_EXISTS`
+- `CURRENT_PASSWORD_REQUIRED`
+- `INVALID_CURRENT_PASSWORD`
+- `PASSWORD_FIELDS_REQUIRED`
+- `PASSWORD_MISMATCH`
+- `WEAK_PASSWORD`
+
+Pour `WEAK_PASSWORD`, le backend peut renvoyer `details`, une liste de messages
+affichee sous le champ nouveau mot de passe.
+
 ## Double authentification TOTP
 
 L'etat courant vient du champ `is_two_factor_enabled` renvoye par :
@@ -136,7 +237,7 @@ L'etat courant vient du champ `is_two_factor_enabled` renvoye par :
 GET /users/
 ```
 
-Depuis le profil, l'activation utilise successivement :
+Depuis les parametres du compte, l'activation utilise successivement :
 
 ```txt
 POST /users/2fa/setup/

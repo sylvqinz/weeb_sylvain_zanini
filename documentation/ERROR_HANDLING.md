@@ -14,6 +14,12 @@ Elle gere plusieurs formats :
 - objet `errors` imbrique ;
 - champs multiples comme `{ email: ["..."], password: ["..."] }`.
 
+`ApiError` conserve aussi :
+
+- `code` pour les codes metier comme `INVALID_CURRENT_PASSWORD` ;
+- `details` quand le backend renvoie une liste de messages, notamment pour
+  `WEAK_PASSWORD`.
+
 ## `publicPost`
 
 Pour les requetes publiques, `publicPost` gere :
@@ -56,4 +62,3 @@ Si le refresh echoue :
 
 - le token local est supprime ;
 - l'utilisateur est redirige vers `/login`.
-

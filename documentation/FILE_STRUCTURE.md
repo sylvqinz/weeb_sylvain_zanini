@@ -53,7 +53,8 @@
 - `Signup.tsx` : inscription.
 - `ResetPassword.tsx` : demande et confirmation de reset password.
 - `Account.tsx` : espace utilisateur.
+- `AccountSettings.tsx` : parametres du compte, profil, mot de passe et 2FA.
+- `ConfirmEmailChange.tsx` : confirmation du changement d'email depuis le lien recu.
 - `AdminDashboard.tsx` : administration.
 - `Contact.tsx` : formulaire de contact.
 - `NotFound.tsx` : page 404.
-

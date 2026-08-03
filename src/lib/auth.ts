@@ -24,6 +24,20 @@ export type PasswordResetConfirmPayload = {
   password: string;
 };
 
+export type UpdateProfilePayload = {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  current_password?: string;
+  password?: string;
+  password_confirm?: string;
+};
+
+export type ConfirmEmailChangePayload = {
+  token: string;
+  current_password: string;
+};
+
 type AuthResponse = {
   access_token?: unknown;
   access?: unknown;
@@ -66,6 +80,11 @@ export type LoginResult = AuthSession | TwoFactorChallenge;
 export type VerifyTwoFactorLoginPayload = {
   two_factor_token: string;
   code: string;
+};
+
+export type UpdateProfileResponse = {
+  message?: string;
+  user?: AuthUser;
 };
 
 export type TwoFactorSetup = {
@@ -122,6 +141,14 @@ export function isAdminUser(user: AuthUser | null) {
 export async function fetchCurrentUser() {
   const response = await api.get<AuthUser>("/users/");
   return response.data;
+}
+
+export async function updateProfile(payload: UpdateProfilePayload) {
+  return request<UpdateProfileResponse>("/users/", { method: "PATCH", data: payload });
+}
+
+export function confirmEmailChange(payload: ConfirmEmailChangePayload) {
+  return publicPost<UpdateProfileResponse>("/users/email-change/confirm/", payload);
 }
 
 async function resolveCurrentUser(fallback: AuthUser | null) {

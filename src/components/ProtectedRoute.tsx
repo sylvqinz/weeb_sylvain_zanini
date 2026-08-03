@@ -7,7 +7,16 @@ type ProtectedRouteProps = {
 };
 
 // Routes publiques et routes reservees aux visiteurs non connectes.
-const publicRoutes = ["/", "/contact", "/login", "/signup", "/blog", "/blog/:slug", "/reset-password"];
+const publicRoutes = [
+  "/",
+  "/contact",
+  "/login",
+  "/signup",
+  "/confirm-email-change",
+  "/blog",
+  "/blog/:slug",
+  "/reset-password",
+];
 const guestOnlyRoutes = ["/login", "/signup"];
 
 function isPublicRoute(pathname: string) {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   getCurrentUserClaims,
+  confirmEmailChange as confirmEmailChangeRequest,
   confirmTwoFactor as confirmTwoFactorRequest,
   disableTwoFactor as disableTwoFactorRequest,
   fetchCurrentUser,
@@ -10,6 +11,7 @@ import {
   refreshAccessToken,
   register as registerRequest,
   setupTwoFactor as setupTwoFactorRequest,
+  updateProfile as updateProfileRequest,
   verifyTwoFactorLogin as verifyTwoFactorLoginRequest,
   type AuthUser,
 } from "../lib/auth";
@@ -88,6 +90,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthenticated(Boolean(session));
         setUser(session?.user || null);
         return session;
+      },
+      async updateProfile(payload) {
+        const response = await updateProfileRequest(payload);
+        if (response.user) {
+          setUser(response.user);
+        }
+        return response;
+      },
+      async confirmEmailChange(payload) {
+        const response = await confirmEmailChangeRequest(payload);
+
+        if (authenticated && response.user) {
+          setUser(response.user);
+        }
+
+        return response;
       },
       setupTwoFactor() {
         return setupTwoFactorRequest();
