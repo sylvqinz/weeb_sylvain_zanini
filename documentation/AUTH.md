@@ -44,6 +44,7 @@ L'authentification est geree par :
 - `is_superuser`
 - `is_admin`
 - `is_active`
+- `is_two_factor_enabled`
 - `role`
 
 ## Stockage de session
@@ -60,7 +61,7 @@ La fonction `login(payload)` appelle :
 POST /users/login/
 ```
 
-Elle extrait le token depuis `access` ou `access_token`, puis le stocke localement.
+Sans 2FA, elle extrait le token depuis `access` ou `access_token`, puis le stocke localement.
 
 Ensuite elle tente de recuperer l'utilisateur courant avec :
 
@@ -69,6 +70,17 @@ GET /users/
 ```
 
 Si cet appel echoue, elle utilise les claims contenus dans le JWT.
+
+Si la reponse contient `requires_2fa: true`, aucun access token n'est stocke et
+l'utilisateur n'est pas encore connecte. La page conserve uniquement le
+`two_factor_token` en memoire et demande un code a six chiffres, puis appelle :
+
+```txt
+POST /users/2fa/verify-login/
+```
+
+`INVALID_TWO_FACTOR_CODE` garde cet ecran ouvert. `TWO_FACTOR_TOKEN_EXPIRED`
+supprime le jeton temporaire et renvoie vers le formulaire email/mot de passe.
 
 ## Register
 
@@ -102,7 +114,11 @@ Si le refresh echoue, le token local est supprime.
 - `checking`
 - `user`
 - `login`
+- `verifyTwoFactorLogin`
 - `register`
+- `setupTwoFactor`
+- `confirmTwoFactor`
+- `disableTwoFactor`
 - `logout`
 - `refreshSession`
 
@@ -111,6 +127,32 @@ Au montage, il initialise la session :
 - si un access token existe, il essaye de charger `/users/` ;
 - sinon, il tente un refresh token ;
 - quand la verification est terminee, `checking` passe a `false`.
+
+## Double authentification TOTP
+
+L'etat courant vient du champ `is_two_factor_enabled` renvoye par :
+
+```txt
+GET /users/
+```
+
+Depuis le profil, l'activation utilise successivement :
+
+```txt
+POST /users/2fa/setup/
+POST /users/2fa/confirm/
+```
+
+Le composant `TwoFactorSettings` transforme directement `provisioning_uri` en
+QR code avec `react-qr-code`, affiche egalement `secret`, puis demande le code
+TOTP. La desactivation appelle :
+
+```txt
+POST /users/2fa/disable/
+```
+
+Apres confirmation ou desactivation, `AuthProvider` met a jour localement
+`user.is_two_factor_enabled`.
 
 ## useAuth
 
@@ -145,4 +187,3 @@ POST /users/logout/
 ```
 
 Puis elle supprime toujours le token local, meme si le backend ne repond pas.
-

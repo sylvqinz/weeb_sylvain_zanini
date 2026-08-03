@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, clearAccessToken, getAccessToken, publicPost, setAccessToken, api } from "./api";
+import { API_URL, clearAccessToken, getAccessToken, publicPost, request, setAccessToken, api } from "./api";
 
 export type LoginPayload = {
   email: string;
@@ -28,6 +28,8 @@ type AuthResponse = {
   access_token?: unknown;
   access?: unknown;
   user?: unknown;
+  requires_2fa?: unknown;
+  two_factor_token?: unknown;
 };
 
 export type AuthUser = {
@@ -42,13 +44,34 @@ export type AuthUser = {
   is_superuser?: boolean;
   is_admin?: boolean;
   is_active?: boolean;
+  is_two_factor_enabled?: boolean;
   role?: string;
   [key: string]: unknown;
 };
 
 export type AuthSession = {
+  requiresTwoFactor: false;
   token: string;
   user: AuthUser | null;
+};
+
+export type TwoFactorChallenge = {
+  requiresTwoFactor: true;
+  twoFactorToken: string;
+  user: AuthUser | null;
+};
+
+export type LoginResult = AuthSession | TwoFactorChallenge;
+
+export type VerifyTwoFactorLoginPayload = {
+  two_factor_token: string;
+  code: string;
+};
+
+export type TwoFactorSetup = {
+  message: string;
+  secret: string;
+  provisioning_uri: string;
 };
 
 export function extractAccessToken(data: AuthResponse) {
@@ -133,6 +156,21 @@ export async function refreshAccessToken() {
 
 export async function login(payload: LoginPayload) {
   const data = await publicPost<AuthResponse>("/users/login/", payload);
+
+  if (data.requires_2fa === true) {
+    const twoFactorToken = data.two_factor_token;
+
+    if (typeof twoFactorToken !== "string" || !twoFactorToken.trim()) {
+      throw new Error("La vérification 2FA est requise, mais aucun jeton temporaire n'a été renvoyé.");
+    }
+
+    return {
+      requiresTwoFactor: true,
+      twoFactorToken,
+      user: extractAuthUser(data),
+    } satisfies TwoFactorChallenge;
+  }
+
   const token = extractAccessToken(data);
 
   if (!token) {
@@ -143,12 +181,31 @@ export async function login(payload: LoginPayload) {
   const user = await resolveCurrentUser(extractAuthUser(data) || getCurrentUserClaims());
 
   return {
+    requiresTwoFactor: false,
     token,
     user,
-  };
+  } satisfies AuthSession;
 }
 
-export async function register(payload: RegisterPayload) {
+export async function verifyTwoFactorLogin(payload: VerifyTwoFactorLoginPayload) {
+  const data = await publicPost<AuthResponse>("/users/2fa/verify-login/", payload);
+  const token = extractAccessToken(data);
+
+  if (!token) {
+    throw new Error("Vérification réussie, mais aucun token JWT n'a été renvoyé.");
+  }
+
+  setAccessToken(token);
+  const user = await resolveCurrentUser(extractAuthUser(data) || getCurrentUserClaims());
+
+  return {
+    requiresTwoFactor: false,
+    token,
+    user,
+  } satisfies AuthSession;
+}
+
+export async function register(payload: RegisterPayload): Promise<AuthSession | null> {
   const data = await publicPost<AuthResponse>("/users/register/", payload);
   const token = extractAccessToken(data);
 
@@ -160,6 +217,7 @@ export async function register(payload: RegisterPayload) {
 
   return token
     ? {
+        requiresTwoFactor: false,
         token,
         user,
       }
@@ -172,6 +230,18 @@ export function requestPasswordReset(payload: PasswordResetRequestPayload) {
 
 export function confirmPasswordReset(payload: PasswordResetConfirmPayload) {
   return publicPost<unknown>("/users/password-reset/confirm/", payload);
+}
+
+export async function setupTwoFactor() {
+  return request<TwoFactorSetup>("/users/2fa/setup/", { method: "POST" });
+}
+
+export async function confirmTwoFactor(code: string) {
+  await request("/users/2fa/confirm/", { method: "POST", data: { code } });
+}
+
+export async function disableTwoFactor(code: string) {
+  await request("/users/2fa/disable/", { method: "POST", data: { code } });
 }
 
 export async function logout() {

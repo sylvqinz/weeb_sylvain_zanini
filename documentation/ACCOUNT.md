@@ -17,6 +17,13 @@ La page affiche :
 - le nombre de ses articles et de ses favoris ;
 - la liste de ses articles ;
 - la liste de ses favoris.
+- l'etat et la configuration de la double authentification TOTP.
+
+## Double authentification
+
+Le composant `TwoFactorSettings` permet d'activer la 2FA avec un QR code et une
+cle manuelle, de confirmer l'activation avec un code a six chiffres, puis de la
+desactiver avec un nouveau code TOTP.
 
 ## Identification de l'utilisateur
 

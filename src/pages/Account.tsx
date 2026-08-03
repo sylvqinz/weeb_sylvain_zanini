@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import FavoriteButton from "../components/FavoriteButton";
+import TwoFactorSettings from "../components/TwoFactorSettings";
 import { useAuth } from "../hooks/useAuth";
 import { type AuthUser } from "../lib/auth";
 import {
@@ -274,6 +275,8 @@ export default function Account() {
         </aside>
 
         <div className="space-y-12">
+          <TwoFactorSettings />
+
           {actionMessage && <p className="text-sm text-purple-300">{actionMessage}</p>}
 
           <div>

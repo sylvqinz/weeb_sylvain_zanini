@@ -80,3 +80,6 @@ Il retourne directement `response.data`.
 
 En cas d'erreur Axios, il transforme la reponse backend en message lisible avec `formatErrorMessage`.
 
+Les erreurs sont representees par `ApiError`, qui conserve aussi le code metier
+du backend. `isApiErrorCode` permet notamment de distinguer
+`INVALID_TWO_FACTOR_CODE` et `TWO_FACTOR_TOKEN_EXPIRED` dans l'interface.

@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   getCurrentUserClaims,
+  confirmTwoFactor as confirmTwoFactorRequest,
+  disableTwoFactor as disableTwoFactorRequest,
   fetchCurrentUser,
   isAuthenticated as hasAccessToken,
   login as loginRequest,
   logout as logoutRequest,
   refreshAccessToken,
   register as registerRequest,
+  setupTwoFactor as setupTwoFactorRequest,
+  verifyTwoFactorLogin as verifyTwoFactorLoginRequest,
   type AuthUser,
 } from "../lib/auth";
 import { AuthContext, type AuthContextValue, type AuthProviderProps } from "./auth-context";
@@ -64,7 +68,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       checking,
       user,
       async login(payload) {
-        const session = await loginRequest(payload);
+        const result = await loginRequest(payload);
+
+        if (!result.requiresTwoFactor) {
+          setAuthenticated(true);
+          setUser(result.user);
+        }
+
+        return result;
+      },
+      async verifyTwoFactorLogin(payload) {
+        const session = await verifyTwoFactorLoginRequest(payload);
         setAuthenticated(true);
         setUser(session.user);
         return session;
@@ -74,6 +88,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthenticated(Boolean(session));
         setUser(session?.user || null);
         return session;
+      },
+      setupTwoFactor() {
+        return setupTwoFactorRequest();
+      },
+      async confirmTwoFactor(code) {
+        await confirmTwoFactorRequest(code);
+        setUser((currentUser) => currentUser && { ...currentUser, is_two_factor_enabled: true });
+      },
+      async disableTwoFactor(code) {
+        await disableTwoFactorRequest(code);
+        setUser((currentUser) => currentUser && { ...currentUser, is_two_factor_enabled: false });
       },
       async logout() {
         await logoutRequest();

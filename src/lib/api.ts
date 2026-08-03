@@ -23,6 +23,38 @@ export function clearAccessToken() {
   sessionStorage.removeItem("access");
 }
 
+export class ApiError extends Error {
+  code?: string;
+
+  constructor(message: string, code?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.code = code;
+  }
+}
+
+function getErrorCode(data: unknown): string | undefined {
+  if (!data || typeof data !== "object") {
+    return undefined;
+  }
+
+  const errors = data as Record<string, unknown>;
+  const possibleErrorCode = [errors.error, errors.detail, errors.message].find(
+    (value): value is string => typeof value === "string" && /^[A-Z][A-Z0-9_]+$/.test(value),
+  );
+  const code = errors.error_code || errors.code || possibleErrorCode;
+
+  if (typeof code === "string" && code.trim()) {
+    return code;
+  }
+
+  return getErrorCode(errors.errors) || getErrorCode(errors.error);
+}
+
+export function isApiErrorCode(error: unknown, code: string) {
+  return error instanceof ApiError && error.code === code;
+}
+
 // Le backend peut renvoyer plusieurs formats d'erreurs; on les reduit en message lisible.
 export function formatErrorMessage(data: unknown): string {
   if (!data || typeof data !== "object") {
@@ -74,7 +106,7 @@ export async function publicPost<T>(path: string, payload: object) {
         throw new Error("Impossible de contacter le serveur.");
       }
 
-      throw new Error(formatErrorMessage(error.response.data));
+      throw new ApiError(formatErrorMessage(error.response.data), getErrorCode(error.response.data));
     }
 
     throw error;
@@ -160,7 +192,7 @@ export async function request<T>(path: string, config: AxiosRequestConfig = {}) 
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(formatErrorMessage(error.response?.data));
+      throw new ApiError(formatErrorMessage(error.response?.data), getErrorCode(error.response?.data));
     }
 
     throw error;
