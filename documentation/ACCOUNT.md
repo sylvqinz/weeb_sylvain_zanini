@@ -107,7 +107,7 @@ Le nom est construit avec :
 3. `email`
 4. `Utilisateur`
 
-Cette logique est dans `getUserName`.
+Cette logique utilise le helper partage `getDisplayName`.
 
 ## Articles personnels et favoris
 

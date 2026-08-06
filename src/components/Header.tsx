@@ -1,35 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { isAdminUser } from "../lib/auth";
+import Button from "./Button";
 
 export default function Header() {
   const navigate = useNavigate();
   const { authenticated, logout, user } = useAuth();
   const [hidden, setHidden] = useState(false);
-  const [lastScroll, setLastScroll] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const lastScrollRef = useRef(0);
   const canAccessAdmin = isAdminUser(user);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
 
-      if (currentScroll > lastScroll && currentScroll > 100) {
+      if (currentScroll > lastScrollRef.current && currentScroll > 100) {
         setHidden(true);
         setMenuOpen(false);
       } else {
         setHidden(false);
       }
 
-      setLastScroll(currentScroll);
+      lastScrollRef.current = currentScroll;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScroll]);
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
   const handleLogout = async () => {
@@ -42,7 +43,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed w-full flex justify-center lg:pt-5 z-50 transition-transform duration-450 ${
+      className={`fixed w-full flex justify-center lg:pt-5 z-50 transition-transform duration-[450ms] ${
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
@@ -88,19 +89,15 @@ export default function Header() {
               <Link to="/account" className="text-[16px] text-neutral-300 hover:text-white transition">
                 Mon compte
               </Link>
-              <button
+              <Button
                 type="button"
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="px-5 py-2 rounded-[8px] text-[16px] font-semibold text-white
-                  bg-gradient-to-r from-purple-500 to-purple-700
-                  hover:from-purple-400 hover:to-purple-600
-                  shadow-lg shadow-purple-600/30
-                  disabled:opacity-60
-                  transition inline-flex items-center justify-center"
+                variant="gradient"
+                className="text-[16px] font-semibold"
               >
                 {loggingOut ? "Déconnexion..." : "Se déconnecter"}
-              </button>
+              </Button>
             </>
           ) : (
             <>
@@ -108,16 +105,13 @@ export default function Header() {
                 Se connecter
               </Link>
 
-              <Link
+              <Button
                 to="/signup"
-                className="px-5 py-2 rounded-[8px] text-[16px] font-semibold text-white
-                  bg-gradient-to-r from-purple-500 to-purple-700
-                  hover:from-purple-400 hover:to-purple-600
-                  shadow-lg shadow-purple-600/30
-                  transition inline-flex items-center justify-center"
+                variant="gradient"
+                className="text-[16px] font-semibold"
               >
                 S'inscrire
-              </Link>
+              </Button>
             </>
           )}
         </div>
@@ -178,19 +172,15 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <button
+                <Button
                   type="button"
                   disabled={loggingOut}
-                  className="px-5 py-3 rounded-[8px] text-[16px] font-semibold text-white
-                    bg-gradient-to-r from-purple-500 to-purple-700
-                    hover:from-purple-400 hover:to-purple-600
-                    shadow-lg shadow-purple-600/30
-                    disabled:opacity-60
-                    transition block w-full text-center"
+                  variant="gradient"
+                  className="w-full py-3 text-[16px] font-semibold"
                   onClick={handleLogout}
                 >
                   {loggingOut ? "Déconnexion..." : "Se déconnecter"}
-                </button>
+                </Button>
               </li>
             </>
           ) : (
@@ -201,17 +191,14 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link
+                <Button
                   to="/signup"
-                  className="px-5 py-3 rounded-[8px] text-[16px] font-semibold text-white
-                    bg-gradient-to-r from-purple-500 to-purple-700
-                    hover:from-purple-400 hover:to-purple-600
-                    shadow-lg shadow-purple-600/30
-                    transition block text-center"
+                  variant="gradient"
+                  className="w-full py-3 text-[16px] font-semibold"
                   onClick={closeMenu}
                 >
                   S'inscrire
-                </Link>
+                </Button>
               </li>
             </>
           )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
 import FavoriteButton from "../components/FavoriteButton";
 import { useAuth } from "../hooks/useAuth";
 import { type Article, fetchArticles } from "../lib/articles";
@@ -53,12 +54,11 @@ export default function Blog() {
 
       {authenticated && (
         <div className="mb-8">
-          <Link
+          <Button
             to="/articles/new"
-            className="inline-flex px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"
           >
             Créer un article
-          </Link>
+          </Button>
         </div>
       )}
 

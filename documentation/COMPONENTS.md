@@ -33,7 +33,45 @@ Role :
 - afficher des colonnes de liens ;
 - afficher les icones de reseaux sociaux avec `react-icons/fa`.
 
-Attention : plusieurs liens du footer ne sont pas encore declares comme routes dans `App.tsx`.
+Attention : plusieurs liens du footer ne sont pas encore declares comme routes dans `src/routes/AppRoutes.tsx`.
+
+## `Button`
+
+Fichier : `src/components/Button.tsx`
+
+Role :
+
+- centraliser les styles de boutons et liens-boutons ;
+- exposer des variantes visuelles (`primary`, `secondary`, `danger`, `dangerOutline`, `gradient`, `heroGradient`, `whiteOutline`) ;
+- gerer les tailles communes (`sm`, `md`, `lg`).
+
+## `TextField`
+
+Fichier : `src/components/TextField.tsx`
+
+Role :
+
+- centraliser les styles de champs de formulaire ;
+- rendre un `input` ou un `textarea` selon le besoin ;
+- exposer les variantes `underline` et `panel`.
+
+## `ConfirmDialog`
+
+Fichier : `src/components/ConfirmDialog.tsx`
+
+Role :
+
+- afficher une confirmation modale reutilisable ;
+- remplacer les confirmations natives pour les actions destructives.
+
+## `Layout`
+
+Fichier : `src/components/Layout.tsx`
+
+Role :
+
+- afficher la structure commune de l'application ;
+- monter `ScrollToTop`, `Header`, le contenu principal et `Footer`.
 
 ## `ProtectedRoute`
 
@@ -72,9 +110,9 @@ Role :
 - rediriger vers `/login` si l'utilisateur n'est pas connecte ;
 - afficher `Accès réservé` si l'utilisateur n'est pas admin.
 
-## `ScrollTop`
+## `ScrollToTop`
 
-Fichier : `src/components/scrollTop.tsx`
+Fichier : `src/components/ScrollToTop.tsx`
 
 Role :
 

@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
 import useObserver from "../hooks/useObserver";
 import useScroll from "../hooks/useScroll";
 
@@ -33,18 +34,20 @@ export default function Home() {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
-          <Link
+          <Button
             to="/blog"
-            className="border-2 border-transparent bg-gradient-to-r from-purple-600 to-purple-500 px-8 py-3 rounded-lg font-medium hover:from-purple-500 hover:to-purple-400 transition"
+            size="lg"
+            variant="heroGradient"
           >
             Découvrir les articles
-          </Link>
-          <Link
+          </Button>
+          <Button
             to="/subscribe"
-            className="border-2 border-white px-8 py-3 rounded-lg font-medium hover:border-gray-400 hover:bg-slate-800 transition"
+            size="lg"
+            variant="whiteOutline"
           >
             S'abonner à la newsletter
-          </Link>
+          </Button>
         </div>
 
         <img

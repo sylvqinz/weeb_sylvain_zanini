@@ -11,7 +11,7 @@
 ## `src/`
 
 - `main.tsx` : montage de React.
-- `App.tsx` : routes, header, footer et layout global.
+- `App.tsx` : composition du layout global et des routes.
 - `index.css` : styles globaux et import Tailwind.
 - `vite-env.d.ts` : types Vite.
 
@@ -19,9 +19,18 @@
 
 - `Header.tsx` : navigation desktop/mobile et deconnexion.
 - `Footer.tsx` : pied de page.
+- `Button.tsx` : bouton reutilisable pour actions et liens-boutons.
+- `TextField.tsx` : champ de formulaire reutilisable.
+- `ConfirmDialog.tsx` : modale de confirmation reutilisable.
+- `Layout.tsx` : structure commune de l'application.
 - `ProtectedRoute.tsx` : protection generale des routes.
 - `AdminRoute.tsx` : protection admin.
-- `scrollTop.tsx` : retour en haut lors du changement de route.
+- `ScrollToTop.tsx` : retour en haut lors du changement de route.
+
+## `src/routes/`
+
+- `AppRoutes.tsx` : declaration des routes React.
+- `routeAccess.ts` : regles d'acces utilisees par `ProtectedRoute`.
 
 ## `src/context/`
 
@@ -31,6 +40,7 @@
 ## `src/hooks/`
 
 - `useAuth.ts` : acces au contexte d'authentification.
+- `useConfirmDialog.tsx` : orchestration des confirmations modales.
 - `useObserver.ts` : detection de visibilite avec `IntersectionObserver`.
 - `useScroll.ts` : progression de scroll d'une section.
 
@@ -40,6 +50,7 @@
 - `auth.ts` : appels auth et helpers utilisateur.
 - `articles.ts` : CRUD articles.
 - `articleOwnership.ts` : droits de gestion des articles.
+- `display.ts` : helpers de formatage pour l'affichage.
 - `admin.ts` : appels API admin.
 - `contact.ts` : envoi du formulaire de contact.
 

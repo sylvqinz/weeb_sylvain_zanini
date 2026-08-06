@@ -1,10 +1,9 @@
 import { type FormEvent, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import Button from "../components/Button";
+import TextField from "../components/TextField";
 import { useAuth } from "../hooks/useAuth";
 import { isApiErrorCode } from "../lib/api";
-
-const inputClass =
-  "w-full rounded-lg border border-purple-500/50 bg-[#15172c] px-4 py-3 text-white outline-none transition focus:border-purple-400";
 
 export default function ConfirmEmailChange() {
   const [searchParams] = useSearchParams();
@@ -90,35 +89,30 @@ export default function ConfirmEmailChange() {
       </div>
 
       <form className="space-y-6 rounded-lg border border-purple-500/40 bg-[#20223f] p-6" onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="confirm-email-current-password" className="mb-2 block text-sm text-purple-200">
-            Mot de passe actuel
-          </label>
-          <input
-            id="confirm-email-current-password"
-            type="password"
-            value={currentPassword}
-            onChange={(event) => {
-              setCurrentPassword(event.target.value);
-              setPasswordError("");
-              setMessage("");
-            }}
-            required
-            autoComplete="current-password"
-            disabled={!token}
-            className={inputClass}
-          />
-          {passwordError && <p className="mt-2 text-sm text-red-200">{passwordError}</p>}
-        </div>
+        <TextField
+          id="confirm-email-current-password"
+          label="Mot de passe actuel"
+          variant="panel"
+          type="password"
+          value={currentPassword}
+          onChange={(event) => {
+            setCurrentPassword(event.target.value);
+            setPasswordError("");
+            setMessage("");
+          }}
+          required
+          autoComplete="current-password"
+          disabled={!token}
+          error={passwordError}
+        />
 
         <div className="flex flex-wrap items-center gap-4">
-          <button
+          <Button
             type="submit"
             disabled={loading || !token}
-            className="rounded-lg bg-purple-600 px-5 py-2 text-white transition hover:bg-purple-700 disabled:opacity-60"
           >
             {loading ? "Confirmation..." : "Confirmer"}
-          </button>
+          </Button>
 
           {message && (
             <p className={`text-sm ${hasError ? "text-red-200" : "text-green-300"}`} aria-live="polite">

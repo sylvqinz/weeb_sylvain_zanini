@@ -3,6 +3,7 @@ import QRCode from "react-qr-code";
 import { useAuth } from "../hooks/useAuth";
 import { type TwoFactorSetup } from "../lib/auth";
 import { isApiErrorCode } from "../lib/api";
+import Button from "./Button";
 
 function getSixDigitCode(value: string) {
   return value.replace(/\D/g, "").slice(0, 6);
@@ -158,18 +159,15 @@ export default function TwoFactorSettings() {
         </div>
 
         {!setup && !showDisableForm && (
-          <button
+          <Button
             type="button"
             onClick={isEnabled ? startDisable : handleSetup}
             disabled={loading}
-            className={`w-fit rounded-lg px-5 py-2 transition disabled:opacity-60 ${
-              isEnabled
-                ? "border border-red-400/70 text-red-200 hover:bg-red-500/10"
-                : "bg-purple-600 text-white hover:bg-purple-700"
-            }`}
+            variant={isEnabled ? "dangerOutline" : "primary"}
+            className="w-fit"
           >
             {loading ? "Chargement..." : isEnabled ? "Désactiver" : "Activer"}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -193,21 +191,20 @@ export default function TwoFactorSettings() {
               <form className="mt-6 space-y-5" onSubmit={handleConfirm}>
                 <CodeInput id="two-factor-confirm-code" value={code} onChange={setCode} />
                 <div className="flex flex-wrap gap-3">
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading || code.length !== 6}
-                    className="rounded-lg bg-purple-600 px-5 py-2 text-white transition hover:bg-purple-700 disabled:opacity-60"
                   >
                     {loading ? "Confirmation..." : "Confirmer"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={cancelSetup}
                     disabled={loading}
-                    className="rounded-lg border border-purple-500/60 px-5 py-2 text-purple-200 transition hover:bg-purple-500/10 disabled:opacity-60"
+                    variant="secondary"
                   >
                     Annuler
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -222,21 +219,21 @@ export default function TwoFactorSettings() {
           </p>
           <CodeInput id="two-factor-disable-code" value={code} onChange={setCode} />
           <div className="flex flex-wrap gap-3">
-            <button
+            <Button
               type="submit"
               disabled={loading || code.length !== 6}
-              className="rounded-lg bg-red-600 px-5 py-2 text-white transition hover:bg-red-700 disabled:opacity-60"
+              variant="danger"
             >
               {loading ? "Désactivation..." : "Confirmer la désactivation"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={cancelDisable}
               disabled={loading}
-              className="rounded-lg border border-purple-500/60 px-5 py-2 text-purple-200 transition hover:bg-purple-500/10 disabled:opacity-60"
+              variant="secondary"
             >
               Annuler
-            </button>
+            </Button>
           </div>
         </form>
       )}

@@ -1,9 +1,13 @@
-import { type FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { type FormEvent, useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Button from "../components/Button";
+import TextField from "../components/TextField";
 import { confirmPasswordReset, requestPasswordReset } from "../lib/auth";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -11,10 +15,17 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
 
   // Le lien email contient uidb64 et token; sans eux, on affiche la demande d'email.
-  const params = new URLSearchParams(window.location.search);
-  const uidb64 = params.get("uidb64");
-  const token = params.get("token");
+  const uidb64 = searchParams.get("uidb64");
+  const token = searchParams.get("token");
   const isConfirmMode = Boolean(uidb64 && token);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   async function handleRequestSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,7 +62,11 @@ export default function ResetPassword() {
       await confirmPasswordReset({ uidb64, token, password });
       setMessage("Mot de passe réinitialisé avec succès.");
 
-      setTimeout(() => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+
+      redirectTimerRef.current = setTimeout(() => {
         navigate("/login");
       }, 800);
     } catch (error) {
@@ -70,60 +85,54 @@ export default function ResetPassword() {
 
         {isConfirmMode ? (
           <form className="space-y-10" onSubmit={handleConfirmSubmit}>
-            <div>
-              <label className="block text-purple-400 mb-2">Nouveau mot de passe</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
-              />
-            </div>
+            <TextField
+              label="Nouveau mot de passe"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              align="center"
+            />
 
-            <div>
-              <label className="block text-purple-400 mb-2">Confirmation du mot de passe</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
-              />
-            </div>
+            <TextField
+              label="Confirmation du mot de passe"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              align="center"
+            />
 
             {message && <p className="text-sm text-purple-300">{message}</p>}
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="mt-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-10 py-2 rounded-lg transition"
+              className="mt-4 px-10"
             >
               {loading ? "Modification..." : "Réinitialiser"}
-            </button>
+            </Button>
           </form>
         ) : (
           <form className="space-y-10" onSubmit={handleRequestSubmit}>
-            <div>
-              <label className="block text-purple-400 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
-              />
-            </div>
+            <TextField
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              align="center"
+            />
 
             {message && <p className="text-sm text-purple-300">{message}</p>}
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="mt-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-10 py-2 rounded-lg transition"
+              className="mt-4 px-10"
             >
               {loading ? "Envoi..." : "Envoyer"}
-            </button>
+            </Button>
           </form>
         )}
 

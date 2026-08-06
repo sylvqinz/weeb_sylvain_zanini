@@ -1,16 +1,16 @@
-import { Link } from "react-router-dom";
+import Button from "../components/Button";
 
 function NotFound() {
   return (
     <section className="flex flex-col items-center justify-center bg-gray-900 text-white px-4">
       <h1 className="text-9xl font-extrabold mb-6 select-none">404</h1>
       <p className="text-2xl mb-8">Page non trouvée</p>
-      <Link
+      <Button
         to="/"
-        className="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition"
+        className="px-6 py-3 font-semibold"
       >
         Retour à l&apos;accueil
-      </Link>
+      </Button>
     </section>
   );
 }

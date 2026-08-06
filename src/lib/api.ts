@@ -6,6 +6,8 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
+let refreshTokenRequest: Promise<string | null> | null = null;
+
 export const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -21,6 +23,38 @@ export function setAccessToken(token: string) {
 
 export function clearAccessToken() {
   sessionStorage.removeItem("access");
+}
+
+function extractRefreshToken(data: { access?: unknown; access_token?: unknown }) {
+  const token = data.access || data.access_token;
+  return typeof token === "string" && token.trim() ? token : null;
+}
+
+export function refreshStoredAccessToken() {
+  if (!refreshTokenRequest) {
+    refreshTokenRequest = axios
+      .post<{ access?: unknown; access_token?: unknown }>(`${API_URL}/users/token/refresh/`, {}, { withCredentials: true })
+      .then((response) => {
+        const token = extractRefreshToken(response.data);
+
+        if (!token) {
+          clearAccessToken();
+          return null;
+        }
+
+        setAccessToken(token);
+        return token;
+      })
+      .catch(() => {
+        clearAccessToken();
+        return null;
+      })
+      .finally(() => {
+        refreshTokenRequest = null;
+      });
+  }
+
+  return refreshTokenRequest;
 }
 
 export class ApiError extends Error {
@@ -177,20 +211,13 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const response = await api.post<{ access?: unknown; access_token?: unknown }>(
-          "/users/token/refresh/",
-          {},
-          { withCredentials: true },
-        );
-        const token = response.data.access || response.data.access_token;
+        const token = await refreshStoredAccessToken();
 
-        if (typeof token !== "string" || !token.trim()) {
-          clearAccessToken();
+        if (!token) {
           window.location.assign("/login");
           return Promise.reject(error);
         }
 
-        setAccessToken(token);
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       } catch (refreshError) {

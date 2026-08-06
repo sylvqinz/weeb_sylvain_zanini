@@ -24,5 +24,4 @@ Le frontend est une application React + TypeScript construite avec Vite, Tailwin
 
 ## Point d'entree
 
-Le rendu React demarre dans `src/main.tsx`. L'application est enveloppee par `BrowserRouter` et `AuthProvider`, puis `App.tsx` declare les routes principales.
-
+Le rendu React demarre dans `src/main.tsx`. L'application est enveloppee par `BrowserRouter` et `AuthProvider`, puis `App.tsx` compose le layout global et les routes principales.

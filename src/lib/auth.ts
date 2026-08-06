@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_URL, clearAccessToken, getAccessToken, publicPost, request, setAccessToken, api } from "./api";
+import { api, clearAccessToken, getAccessToken, publicPost, refreshStoredAccessToken, request, setAccessToken } from "./api";
 
 export type LoginPayload = {
   email: string;
@@ -160,25 +159,7 @@ async function resolveCurrentUser(fallback: AuthUser | null) {
 }
 
 export async function refreshAccessToken() {
-  try {
-    const response = await axios.post<AuthResponse>(
-      `${API_URL}/users/token/refresh/`,
-      {},
-      { withCredentials: true },
-    );
-    const token = extractAccessToken(response.data);
-
-    if (!token) {
-      clearAccessToken();
-      return null;
-    }
-
-    setAccessToken(token);
-    return token;
-  } catch {
-    clearAccessToken();
-    return null;
-  }
+  return refreshStoredAccessToken();
 }
 
 export async function login(payload: LoginPayload) {

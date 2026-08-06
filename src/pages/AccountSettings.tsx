@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
+import TextField from "../components/TextField";
 import TwoFactorSettings from "../components/TwoFactorSettings";
 import { useAuth } from "../hooks/useAuth";
 import { ApiError, isApiErrorCode } from "../lib/api";
@@ -22,9 +24,6 @@ type ProfileFieldErrors = Partial<Record<keyof ProfileFormState, string>>;
 type PasswordFieldErrors = Partial<Record<keyof PasswordFormState, string>> & {
   passwordDetails?: string[];
 };
-
-const inputClass =
-  "w-full rounded-lg border border-purple-500/50 bg-[#15172c] px-4 py-3 text-white outline-none transition focus:border-purple-400";
 
 function getUserString(user: AuthUser | null, key: string) {
   const value = user?.[key];
@@ -230,58 +229,45 @@ export default function AccountSettings() {
           <h2 className="text-2xl font-semibold">Profil</h2>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <div>
-              <label htmlFor="account-first-name" className="mb-2 block text-sm text-purple-200">
-                Prénom
-              </label>
-              <input
-                id="account-first-name"
-                type="text"
-                value={profileForm.firstName}
-                onChange={(event) => updateProfileField("firstName", event.target.value)}
-                autoComplete="given-name"
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="account-last-name" className="mb-2 block text-sm text-purple-200">
-                Nom
-              </label>
-              <input
-                id="account-last-name"
-                type="text"
-                value={profileForm.lastName}
-                onChange={(event) => updateProfileField("lastName", event.target.value)}
-                autoComplete="family-name"
-                className={inputClass}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="account-email" className="mb-2 block text-sm text-purple-200">
-              Email
-            </label>
-            <input
-              id="account-email"
-              type="email"
-              value={profileForm.email}
-              onChange={(event) => updateProfileField("email", event.target.value)}
-              autoComplete="email"
-              className={inputClass}
+            <TextField
+              id="account-first-name"
+              label="Prénom"
+              variant="panel"
+              type="text"
+              value={profileForm.firstName}
+              onChange={(event) => updateProfileField("firstName", event.target.value)}
+              autoComplete="given-name"
             />
-            {profileErrors.email && <p className="mt-2 text-sm text-red-200">{profileErrors.email}</p>}
+
+            <TextField
+              id="account-last-name"
+              label="Nom"
+              variant="panel"
+              type="text"
+              value={profileForm.lastName}
+              onChange={(event) => updateProfileField("lastName", event.target.value)}
+              autoComplete="family-name"
+            />
           </div>
+
+          <TextField
+            id="account-email"
+            label="Email"
+            variant="panel"
+            type="email"
+            value={profileForm.email}
+            onChange={(event) => updateProfileField("email", event.target.value)}
+            autoComplete="email"
+            error={profileErrors.email}
+          />
 
           <div className="flex flex-wrap items-center gap-4">
-            <button
+            <Button
               type="submit"
               disabled={savingProfile}
-              className="rounded-lg bg-purple-600 px-5 py-2 text-white transition hover:bg-purple-700 disabled:opacity-60"
             >
               {savingProfile ? "Enregistrement..." : "Enregistrer le profil"}
-            </button>
+            </Button>
 
             {profileMessage && (
               <p className={`text-sm ${profileHasError ? "text-red-200" : "text-green-300"}`} aria-live="polite">
@@ -294,39 +280,31 @@ export default function AccountSettings() {
         <form className="space-y-6 rounded-lg border border-purple-500/40 bg-[#20223f] p-6" onSubmit={handlePasswordSubmit}>
           <h2 className="text-2xl font-semibold">Mot de passe</h2>
 
-          <div>
-            <label htmlFor="account-password-current" className="mb-2 block text-sm text-purple-200">
-              Mot de passe actuel
-            </label>
-            <input
-              id="account-password-current"
-              type="password"
-              value={passwordForm.currentPassword}
-              onChange={(event) => updatePasswordField("currentPassword", event.target.value)}
-              required
-              autoComplete="current-password"
-              className={inputClass}
-            />
-            {passwordErrors.currentPassword && (
-              <p className="mt-2 text-sm text-red-200">{passwordErrors.currentPassword}</p>
-            )}
-          </div>
+          <TextField
+            id="account-password-current"
+            label="Mot de passe actuel"
+            variant="panel"
+            type="password"
+            value={passwordForm.currentPassword}
+            onChange={(event) => updatePasswordField("currentPassword", event.target.value)}
+            required
+            autoComplete="current-password"
+            error={passwordErrors.currentPassword}
+          />
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label htmlFor="account-password-new" className="mb-2 block text-sm text-purple-200">
-                Nouveau mot de passe
-              </label>
-              <input
+              <TextField
                 id="account-password-new"
+                label="Nouveau mot de passe"
+                variant="panel"
                 type="password"
                 value={passwordForm.password}
                 onChange={(event) => updatePasswordField("password", event.target.value)}
                 required
                 autoComplete="new-password"
-                className={inputClass}
+                error={passwordErrors.password}
               />
-              {passwordErrors.password && <p className="mt-2 text-sm text-red-200">{passwordErrors.password}</p>}
               {passwordErrors.passwordDetails && (
                 <ul className="mt-2 space-y-1 text-sm text-red-200">
                   {passwordErrors.passwordDetails.map((detail) => (
@@ -336,33 +314,23 @@ export default function AccountSettings() {
               )}
             </div>
 
-            <div>
-              <label htmlFor="account-password-confirm" className="mb-2 block text-sm text-purple-200">
-                Confirmer le mot de passe
-              </label>
-              <input
-                id="account-password-confirm"
-                type="password"
-                value={passwordForm.passwordConfirm}
-                onChange={(event) => updatePasswordField("passwordConfirm", event.target.value)}
-                required
-                autoComplete="new-password"
-                className={inputClass}
-              />
-              {passwordErrors.passwordConfirm && (
-                <p className="mt-2 text-sm text-red-200">{passwordErrors.passwordConfirm}</p>
-              )}
-            </div>
+            <TextField
+              id="account-password-confirm"
+              label="Confirmer le mot de passe"
+              variant="panel"
+              type="password"
+              value={passwordForm.passwordConfirm}
+              onChange={(event) => updatePasswordField("passwordConfirm", event.target.value)}
+              required
+              autoComplete="new-password"
+              error={passwordErrors.passwordConfirm}
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <button
-              type="submit"
-              disabled={savingPassword}
-              className="rounded-lg bg-purple-600 px-5 py-2 text-white transition hover:bg-purple-700 disabled:opacity-60"
-            >
+            <Button type="submit" disabled={savingPassword}>
               {savingPassword ? "Enregistrement..." : "Enregistrer le mot de passe"}
-            </button>
+            </Button>
 
             {passwordMessage && (
               <p className={`text-sm ${passwordHasError ? "text-red-200" : "text-green-300"}`} aria-live="polite">
@@ -374,12 +342,9 @@ export default function AccountSettings() {
 
         <TwoFactorSettings />
 
-        <Link
-          to="/account"
-          className="inline-flex rounded-lg border border-purple-500/60 px-5 py-2 text-purple-200 transition hover:bg-purple-500/10"
-        >
+        <Button to="/account" variant="secondary">
           Retour au compte
-        </Link>
+        </Button>
       </div>
     </section>
   );

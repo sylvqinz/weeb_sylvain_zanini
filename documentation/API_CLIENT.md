@@ -45,7 +45,7 @@ Authorization: Bearer <token>
 
 ## Intercepteur de reponse
 
-Si une reponse retourne `401`, le client tente une seule fois de rafraichir le token via :
+Si une reponse retourne `401`, le client tente de rafraichir le token via :
 
 ```txt
 POST /users/token/refresh/
@@ -55,6 +55,8 @@ Si le refresh fonctionne :
 
 - le nouveau token est stocke ;
 - la requete originale est relancee.
+
+Les refresh concurrents partagent la meme promesse interne pour eviter de declencher plusieurs appels simultanes.
 
 Si le refresh echoue :
 

@@ -4,7 +4,7 @@
 
 Le routeur est fourni par `BrowserRouter` dans `src/main.tsx`.
 
-Les routes sont declarees dans `src/App.tsx` avec `Routes` et `Route` de `react-router-dom`.
+Les routes sont declarees dans `src/routes/AppRoutes.tsx` avec `Routes` et `Route` de `react-router-dom`.
 
 ## Routes principales
 
@@ -27,12 +27,12 @@ Les routes sont declarees dans `src/App.tsx` avec `Routes` et `Route` de `react-
 
 ## `ProtectedRoute`
 
-`ProtectedRoute` englobe toutes les routes dans `App.tsx`.
+`ProtectedRoute` englobe toutes les routes dans `src/routes/AppRoutes.tsx`.
 
-Il contient deux listes :
+Les regles d'acces sont declarees dans `src/routes/routeAccess.ts` :
 
-- `publicRoutes` : pages accessibles sans connexion.
-- `guestOnlyRoutes` : pages reservees aux utilisateurs non connectes.
+- `publicRoutePaths` : pages accessibles sans connexion.
+- `guestOnlyRoutePaths` : pages reservees aux utilisateurs non connectes.
 
 Comportement :
 
@@ -54,7 +54,7 @@ Dans ce projet, `isAdminUser` considere admin uniquement un utilisateur avec `is
 
 ## Routes mentionnees mais non declarees
 
-Certaines URLs apparaissent dans le footer ou la homepage, mais ne sont pas declarees dans `App.tsx`, par exemple :
+Certaines URLs apparaissent dans le footer ou la homepage, mais ne sont pas declarees dans `src/routes/AppRoutes.tsx`, par exemple :
 
 - `/pricing`
 - `/overview`

@@ -1,56 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
 import { canManageArticle, getAuthorName } from "../lib/articleOwnership";
+import useConfirmDialog from "../hooks/useConfirmDialog";
 import { useAuth } from "../hooks/useAuth";
 import { deactivateAdminUser, fetchAdminUsers, getAdminUserId, type AdminUser, validateAdminUser } from "../lib/admin";
 import { type Article, deleteArticle, fetchArticles } from "../lib/articles";
+import { formatDate, getArticlePreview, getDisplayName } from "../lib/display";
 
 type AdminTab = "articles" | "users";
-
-function getUserField(user: AdminUser, key: string) {
-  const value = user[key];
-
-  if (typeof value === "string" && value.trim()) {
-    return value.trim();
-  }
-
-  if (typeof value === "number") {
-    return String(value);
-  }
-
-  return null;
-}
-
-function getUserName(user: AdminUser) {
-  const fullName = [getUserField(user, "first_name"), getUserField(user, "last_name")].filter(Boolean).join(" ");
-
-  return fullName || getUserField(user, "username") || getUserField(user, "email") || "Utilisateur";
-}
 
 function isActiveUser(user: AdminUser) {
   return user.is_active !== false;
 }
 
-function getArticlePreview(article: Article) {
-  return article.excerpt || article.content || article.body || "Aucun extrait disponible.";
-}
-
-function formatDate(value: string | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString();
-}
-
 export default function AdminDashboard() {
   const { user: currentUser } = useAuth();
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState<AdminTab>("articles");
   const [articles, setArticles] = useState<Article[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -111,7 +77,14 @@ export default function AdminDashboard() {
   const pendingUsers = useMemo(() => users.filter((user) => !isActiveUser(user)), [users]);
 
   async function handleDeleteArticle(slug: string) {
-    if (!window.confirm("Supprimer cette publication ?")) {
+    const confirmed = await confirm({
+      title: "Supprimer la publication",
+      message: "Supprimer cette publication ?",
+      confirmLabel: "Supprimer",
+      variant: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -181,24 +154,20 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mb-8 flex flex-wrap gap-3">
-        <button
+        <Button
           type="button"
           onClick={() => setActiveTab("articles")}
-          className={`px-5 py-2 rounded-lg transition ${
-            activeTab === "articles" ? "bg-purple-600 text-white" : "border border-purple-500/50 text-purple-200"
-          }`}
+          variant={activeTab === "articles" ? "primary" : "secondary"}
         >
           Publications
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => setActiveTab("users")}
-          className={`px-5 py-2 rounded-lg transition ${
-            activeTab === "users" ? "bg-purple-600 text-white" : "border border-purple-500/50 text-purple-200"
-          }`}
+          variant={activeTab === "users" ? "primary" : "secondary"}
         >
           Utilisateurs
-        </button>
+        </Button>
       </div>
 
       {message && <p className="mb-5 text-purple-300">{message}</p>}
@@ -288,7 +257,7 @@ export default function AdminDashboard() {
               <article key={userId || user.email || user.username} className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6">
                 <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold">{getUserName(user)}</h2>
+                    <h2 className="text-xl font-semibold">{getDisplayName(user)}</h2>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-400">
                       {user.email && <span>{user.email}</span>}
                       {joinedAt && <span>Inscrit le {joinedAt}</span>}
@@ -304,14 +273,14 @@ export default function AdminDashboard() {
                     >
                       {active ? "Validé" : "En attente"}
                     </span>
-                    <button
+                    <Button
                       type="button"
                       onClick={() => handleUserValidation(user, active)}
                       disabled={!userId || updatingUserId === userId || user.is_staff}
-                      className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white transition"
+                      size="sm"
                     >
                       {updatingUserId === userId ? "Modification..." : active ? "Désactiver" : "Valider"}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </article>
@@ -319,6 +288,7 @@ export default function AdminDashboard() {
           })}
         </div>
       )}
+      {confirmationDialog}
     </section>
   );
 }

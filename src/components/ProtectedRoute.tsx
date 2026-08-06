@@ -1,31 +1,11 @@
 import { type ReactNode } from "react";
-import { matchPath, Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { isGuestOnlyRoute, isPublicRoute } from "../routes/routeAccess";
 
 type ProtectedRouteProps = {
   children: ReactNode;
 };
-
-// Routes publiques et routes reservees aux visiteurs non connectes.
-const publicRoutes = [
-  "/",
-  "/contact",
-  "/login",
-  "/signup",
-  "/confirm-email-change",
-  "/blog",
-  "/blog/:slug",
-  "/reset-password",
-];
-const guestOnlyRoutes = ["/login", "/signup"];
-
-function isPublicRoute(pathname: string) {
-  return publicRoutes.some((path) => matchPath({ path, end: true }, pathname));
-}
-
-function isGuestOnlyRoute(pathname: string) {
-  return guestOnlyRoutes.some((path) => matchPath({ path, end: true }, pathname));
-}
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();

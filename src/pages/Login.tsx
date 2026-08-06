@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Button from "../components/Button";
+import TextField from "../components/TextField";
 import { useAuth } from "../hooks/useAuth";
 import { isApiErrorCode } from "../lib/api";
 
@@ -95,87 +97,77 @@ export default function Login() {
 
         {awaitingTwoFactor ? (
           <form className="space-y-8" onSubmit={handleTwoFactorSubmit}>
-            <div>
-              <label htmlFor="login-two-factor-code" className="block text-purple-400 mb-3">
-                Code de votre application d'authentification
-              </label>
-              <input
-                id="login-two-factor-code"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                value={code}
-                onChange={(e) => setCode(getSixDigitCode(e.target.value))}
-                required
-                autoFocus
-                className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-3 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center text-2xl tracking-[0.5em]"
-              />
-            </div>
+            <TextField
+              id="login-two-factor-code"
+              label="Code de votre application d'authentification"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(getSixDigitCode(e.target.value))}
+              required
+              autoFocus
+              align="center"
+              fieldClassName="py-3 text-2xl tracking-[0.5em]"
+            />
 
             {message && <p className="text-sm text-purple-300">{message}</p>}
 
             <div className="flex flex-wrap justify-center gap-4">
-              <button
+              <Button
                 type="submit"
                 disabled={loading || code.length !== 6}
-                className="bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-8 py-2 rounded-lg transition"
+                className="px-8"
               >
                 {loading ? "Vérification..." : "Vérifier"}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => resetTwoFactor()}
                 disabled={loading}
-                className="border border-purple-500/60 hover:bg-purple-500/10 disabled:opacity-60 text-purple-200 px-8 py-2 rounded-lg transition"
+                variant="secondary"
+                className="px-8"
               >
                 Annuler
-              </button>
+              </Button>
             </div>
           </form>
         ) : (
           <>
             <form className="space-y-10" onSubmit={handleCredentialsSubmit}>
-              <div>
-                <label htmlFor="login-email" className="block text-purple-400 mb-2">
-                  Email
-                </label>
-                <input
-                  id="login-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
-                />
-              </div>
+              <TextField
+                id="login-email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                align="center"
+              />
 
-              <div>
-                <label htmlFor="login-password" className="block text-purple-400 mb-2">
-                  Mot de passe
-                </label>
-                <input
-                  id="login-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition text-center"
-                />
-              </div>
+              <TextField
+                id="login-password"
+                label="Mot de passe"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                align="center"
+              />
 
               {message && <p className="text-sm text-purple-300">{message}</p>}
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="mt-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-10 py-2 rounded-lg transition"
+                className="mt-4 px-10"
               >
                 {loading ? "Connexion..." : "Se connecter"}
-              </button>
+              </Button>
             </form>
 
             <div className="mt-8 space-y-4 text-sm">
