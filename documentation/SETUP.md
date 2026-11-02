@@ -32,7 +32,7 @@ npm install
 2. Configurer l'URL de l'API si besoin dans `.env` :
 
 ```txt
-VITE_API_URL=http://localhost:8000/api
+VITE_API_URL=http://localhost:8000
 ```
 
 3. Demarrer le serveur Vite :

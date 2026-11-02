@@ -60,7 +60,7 @@ La suppression demande une confirmation avec `ConfirmDialog`.
 Les utilisateurs sont recuperes via :
 
 ```txt
-GET /admin/users/
+GET /api/admin/users/
 ```
 
 Le code accepte plusieurs formats de reponse :
@@ -75,14 +75,14 @@ Le code accepte plusieurs formats de reponse :
 Pour valider un utilisateur :
 
 ```txt
-PATCH /admin/users/:userId/
+PATCH /api/admin/users/:userId/
 { "is_active": true }
 ```
 
 Pour desactiver un utilisateur :
 
 ```txt
-PATCH /admin/users/:userId/
+PATCH /api/admin/users/:userId/
 { "is_active": false }
 ```
 

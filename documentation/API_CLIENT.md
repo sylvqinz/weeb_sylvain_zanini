@@ -5,10 +5,10 @@ Le client API principal est defini dans `src/lib/api.ts`.
 ## URL de base
 
 ```ts
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000/api").replace(/\/+$/, "");
+export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 ```
 
-Si `VITE_API_URL` n'est pas definie, le frontend utilise `http://localhost:8000/api`.
+Si `VITE_API_URL` n'est pas definie, le frontend utilise `http://localhost:8000`.
 
 La methode `replace(/\/+$/, "")` supprime les slashs en fin d'URL pour eviter les doubles slashs lors de la concatenation des chemins.
 

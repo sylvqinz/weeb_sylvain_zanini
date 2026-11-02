@@ -13,7 +13,7 @@ Cette variable doit pointer vers l'API backend.
 Exemple :
 
 ```txt
-VITE_API_URL=http://localhost:8000/api
+VITE_API_URL=http://localhost:8000
 ```
 
 ## Valeur par defaut
@@ -21,7 +21,7 @@ VITE_API_URL=http://localhost:8000/api
 Si `VITE_API_URL` n'est pas definie, `src/lib/api.ts` utilise :
 
 ```txt
-http://localhost:8000/api
+http://localhost:8000
 ```
 
 ## Pourquoi le prefixe `VITE_`
@@ -44,3 +44,9 @@ Points a verifier cote backend :
 - credentials autorises ;
 - cookies compatibles avec l'environnement local ou production.
 
+
+## Prefixes des routes
+
+`VITE_API_URL` doit pointer vers la racine du backend, sans suffixe `/api`.
+Les appels utilisateurs, articles et contact utilisent directement cette base.
+Seuls les appels administrateurs ajoutent `/api/admin/` dans leur chemin.
