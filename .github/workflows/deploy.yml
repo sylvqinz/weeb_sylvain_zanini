@@ -41,6 +41,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          VITE_API_URL: https://weeb-backend-staging.onrender.com
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
