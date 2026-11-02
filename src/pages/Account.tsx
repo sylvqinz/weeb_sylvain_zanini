@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { FiSettings } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
 import FavoriteButton from "../components/FavoriteButton";
+import useConfirmDialog from "../hooks/useConfirmDialog";
 import { useAuth } from "../hooks/useAuth";
-import { type AuthUser } from "../lib/auth";
 import {
   type Article,
   type FavoriteUpdate,
@@ -10,48 +12,7 @@ import {
   fetchMyArticles,
   fetchMyFavorites,
 } from "../lib/articles";
-
-function getUserField(user: AuthUser | null, key: string) {
-  const value = user?.[key];
-
-  if (typeof value === "string" && value.trim()) {
-    return value.trim();
-  }
-
-  if (typeof value === "number") {
-    return String(value);
-  }
-
-  if (typeof value === "boolean") {
-    return value ? "Oui" : "Non";
-  }
-
-  return null;
-}
-
-function getUserName(user: AuthUser | null) {
-  const fullName = [getUserField(user, "first_name"), getUserField(user, "last_name")].filter(Boolean).join(" ");
-
-  return fullName || getUserField(user, "username") || getUserField(user, "email") || "Utilisateur";
-}
-
-function getArticlePreview(article: Article) {
-  return article.excerpt || article.content || article.body || "Aucun extrait disponible.";
-}
-
-function formatDate(value: string | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString();
-}
+import { formatDate, getArticlePreview, getDisplayField, getDisplayName } from "../lib/display";
 
 type AccountArticleCardProps = {
   article: Article;
@@ -123,6 +84,7 @@ function AccountArticleCard({
 
 export default function Account() {
   const { user } = useAuth();
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [articles, setArticles] = useState<Article[]>([]);
   const [favorites, setFavorites] = useState<Article[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
@@ -181,8 +143,8 @@ export default function Account() {
 
   const profileRows = useMemo(
     () => [
-      { label: "Nom", value: getUserName(user) },
-      { label: "Email", value: getUserField(user, "email") || "Non renseigné" },
+      { label: "Nom", value: getDisplayName(user) },
+      { label: "Email", value: getDisplayField(user, "email") || "Non renseigné" },
     ],
     [user],
   );
@@ -210,7 +172,14 @@ export default function Account() {
   }
 
   async function handleDelete(slug: string) {
-    if (!window.confirm("Supprimer cette publication ?")) {
+    const confirmed = await confirm({
+      title: "Supprimer la publication",
+      message: "Supprimer cette publication ?",
+      confirmLabel: "Supprimer",
+      variant: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -234,22 +203,33 @@ export default function Account() {
       <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Mon compte</h1>
-          <p className="text-gray-300">Bonjour {getUserName(user)}.</p>
+          <p className="text-gray-300">Bonjour {getDisplayName(user)}.</p>
         </div>
 
-        <Link
+        <Button
           to="/articles/new"
-          className="inline-flex w-fit px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"
+          className="w-fit"
         >
           Créer un article
-        </Link>
+        </Button>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,360px)_1fr]">
         <aside className="border border-purple-500/40 rounded-lg bg-[#20223f] p-6 h-fit">
-          <div className="mb-6">
-            <p className="text-sm uppercase tracking-[2px] text-purple-300 mb-2">Profil</p>
-            <h2 className="text-2xl font-semibold">{getUserName(user)}</h2>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[2px] text-purple-300 mb-2">Profil</p>
+              <h2 className="text-2xl font-semibold">{getDisplayName(user)}</h2>
+            </div>
+
+            <Link
+              to="/account/settings"
+              aria-label="Paramètres du compte"
+              title="Paramètres du compte"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-purple-500/50 text-purple-200 transition hover:bg-purple-500/10 hover:text-white"
+            >
+              <FiSettings aria-hidden="true" className="h-5 w-5" />
+            </Link>
           </div>
 
           <dl className="space-y-5">
@@ -335,6 +315,7 @@ export default function Account() {
           </div>
         </div>
       </div>
+      {confirmationDialog}
     </section>
   );
 }

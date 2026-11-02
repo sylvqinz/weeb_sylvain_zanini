@@ -53,14 +53,14 @@ Dans l'onglet publications, chaque article peut afficher :
 
 Les actions de modification et suppression sont visibles seulement si `canManageArticle(article, currentUser)` retourne `true`.
 
-La suppression demande une confirmation avec `window.confirm`.
+La suppression demande une confirmation avec `ConfirmDialog`.
 
 ## Gestion des utilisateurs
 
 Les utilisateurs sont recuperes via :
 
 ```txt
-GET /api/admin/users/
+GET /admin/users/
 ```
 
 Le code accepte plusieurs formats de reponse :
@@ -75,16 +75,15 @@ Le code accepte plusieurs formats de reponse :
 Pour valider un utilisateur :
 
 ```txt
-PATCH /api/admin/users/:userId/
+PATCH /admin/users/:userId/
 { "is_active": true }
 ```
 
 Pour desactiver un utilisateur :
 
 ```txt
-PATCH /api/admin/users/:userId/
+PATCH /admin/users/:userId/
 { "is_active": false }
 ```
 
 Le bouton est desactive pour les comptes staff afin d'eviter de modifier un admin depuis cette interface.
-

@@ -45,7 +45,7 @@ Authorization: Bearer <token>
 
 ## Intercepteur de reponse
 
-Si une reponse retourne `401`, le client tente une seule fois de rafraichir le token via :
+Si une reponse retourne `401`, le client tente de rafraichir le token via :
 
 ```txt
 POST /users/token/refresh/
@@ -55,6 +55,8 @@ Si le refresh fonctionne :
 
 - le nouveau token est stocke ;
 - la requete originale est relancee.
+
+Les refresh concurrents partagent la meme promesse interne pour eviter de declencher plusieurs appels simultanes.
 
 Si le refresh echoue :
 
@@ -70,7 +72,8 @@ Il est utilise pour les endpoints publics comme :
 - login ;
 - register ;
 - password reset request ;
-- password reset confirm.
+- password reset confirm ;
+- confirmation de changement d'email.
 
 ## `request`
 
@@ -80,3 +83,32 @@ Il retourne directement `response.data`.
 
 En cas d'erreur Axios, il transforme la reponse backend en message lisible avec `formatErrorMessage`.
 
+Les erreurs sont representees par `ApiError`, qui conserve aussi le code metier
+du backend. `isApiErrorCode` permet notamment de distinguer
+`INVALID_TWO_FACTOR_CODE` et `TWO_FACTOR_TOKEN_EXPIRED` dans l'interface.
+
+`ApiError` conserve egalement `details` quand le backend renvoie une liste dans
+`details`. Ce champ est utilise pour afficher les messages de `WEAK_PASSWORD`
+sous le champ de nouveau mot de passe.
+
+## Endpoints compte
+
+Le client auth expose notamment :
+
+```txt
+PATCH /users/
+POST /users/email-change/confirm/
+```
+
+`PATCH /users/` est utilise pour les modifications de profil et de mot de
+passe.
+
+`POST /users/email-change/confirm/` est appele depuis
+`/confirm-email-change?token=...` avec :
+
+```json
+{
+  "token": "...",
+  "current_password": "MotDePasseActuel123!"
+}
+```

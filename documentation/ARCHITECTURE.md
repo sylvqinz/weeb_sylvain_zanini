@@ -2,10 +2,11 @@
 
 ## Vue generale
 
-L'application est organisee autour de quatre zones principales :
+L'application est organisee autour de cinq zones principales :
 
 - `src/main.tsx` : point d'entree React.
-- `src/App.tsx` : layout global et declaration des routes.
+- `src/App.tsx` : composition du layout global et des routes.
+- `src/routes/` : declaration des routes et regles d'acces.
 - `src/pages/` : pages associees aux routes.
 - `src/lib/` : appels API et logique metier partagee.
 
@@ -21,18 +22,21 @@ L'application est organisee autour de quatre zones principales :
 
 ## Layout global
 
-`src/App.tsx` affiche :
+`src/components/Layout.tsx` affiche :
 
-- `ScrollTop`
+- `ScrollToTop`
 - `Header`
 - le contenu principal dans `<main>`
 - `Footer`
 
-Les routes sont placees dans `ProtectedRoute`, qui decide si une page est publique, protegee ou reservee aux visiteurs non connectes.
+`src/App.tsx` compose ce layout avec `src/routes/AppRoutes.tsx`.
+
+Les routes sont placees dans `ProtectedRoute`, qui decide si une page est publique, protegee ou reservee aux visiteurs non connectes. Les regles d'acces sont declarees dans `src/routes/routeAccess.ts`.
 
 ## Separation des responsabilites
 
 - Les composants UI reutilisables sont dans `src/components/`.
+- Les routes et leurs regles d'acces sont dans `src/routes/`.
 - Les pages sont dans `src/pages/`.
 - Les hooks personnalisés sont dans `src/hooks/`.
 - La logique d'API est dans `src/lib/`.
@@ -46,4 +50,3 @@ Le dossier `src/context/` contient deux fichiers :
 - `AuthProvider.tsx` : contient le composant React qui gere l'etat d'authentification.
 
 Cette separation evite de melanger un composant React avec des exports non composants, ce qui aide avec Fast Refresh et ESLint.
-

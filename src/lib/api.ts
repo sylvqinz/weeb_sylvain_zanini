@@ -6,6 +6,8 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
+let refreshTokenRequest: Promise<string | null> | null = null;
+
 export const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -21,6 +23,92 @@ export function setAccessToken(token: string) {
 
 export function clearAccessToken() {
   sessionStorage.removeItem("access");
+}
+
+function extractRefreshToken(data: { access?: unknown; access_token?: unknown }) {
+  const token = data.access || data.access_token;
+  return typeof token === "string" && token.trim() ? token : null;
+}
+
+export function refreshStoredAccessToken() {
+  if (!refreshTokenRequest) {
+    refreshTokenRequest = axios
+      .post<{ access?: unknown; access_token?: unknown }>(`${API_URL}/users/token/refresh/`, {}, { withCredentials: true })
+      .then((response) => {
+        const token = extractRefreshToken(response.data);
+
+        if (!token) {
+          clearAccessToken();
+          return null;
+        }
+
+        setAccessToken(token);
+        return token;
+      })
+      .catch(() => {
+        clearAccessToken();
+        return null;
+      })
+      .finally(() => {
+        refreshTokenRequest = null;
+      });
+  }
+
+  return refreshTokenRequest;
+}
+
+export class ApiError extends Error {
+  code?: string;
+  details?: string[];
+
+  constructor(message: string, code?: string, details?: string[]) {
+    super(message);
+    this.name = "ApiError";
+    this.code = code;
+    this.details = details;
+  }
+}
+
+function getErrorCode(data: unknown): string | undefined {
+  if (!data || typeof data !== "object") {
+    return undefined;
+  }
+
+  const errors = data as Record<string, unknown>;
+  const possibleErrorCode = [errors.error, errors.detail, errors.message].find(
+    (value): value is string => typeof value === "string" && /^[A-Z][A-Z0-9_]+$/.test(value),
+  );
+  const code = errors.error_code || errors.code || possibleErrorCode;
+
+  if (typeof code === "string" && code.trim()) {
+    return code;
+  }
+
+  return getErrorCode(errors.errors) || getErrorCode(errors.error);
+}
+
+function getErrorDetails(data: unknown): string[] | undefined {
+  if (!data || typeof data !== "object") {
+    return undefined;
+  }
+
+  const errors = data as Record<string, unknown>;
+
+  if (Array.isArray(errors.details)) {
+    const details = errors.details.filter(
+      (detail): detail is string => typeof detail === "string" && detail.trim().length > 0,
+    );
+
+    if (details.length > 0) {
+      return details;
+    }
+  }
+
+  return getErrorDetails(errors.errors) || getErrorDetails(errors.error);
+}
+
+export function isApiErrorCode(error: unknown, code: string) {
+  return error instanceof ApiError && error.code === code;
 }
 
 // Le backend peut renvoyer plusieurs formats d'erreurs; on les reduit en message lisible.
@@ -74,7 +162,11 @@ export async function publicPost<T>(path: string, payload: object) {
         throw new Error("Impossible de contacter le serveur.");
       }
 
-      throw new Error(formatErrorMessage(error.response.data));
+      throw new ApiError(
+        formatErrorMessage(error.response.data),
+        getErrorCode(error.response.data),
+        getErrorDetails(error.response.data),
+      );
     }
 
     throw error;
@@ -119,20 +211,13 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const response = await api.post<{ access?: unknown; access_token?: unknown }>(
-          "/users/token/refresh/",
-          {},
-          { withCredentials: true },
-        );
-        const token = response.data.access || response.data.access_token;
+        const token = await refreshStoredAccessToken();
 
-        if (typeof token !== "string" || !token.trim()) {
-          clearAccessToken();
+        if (!token) {
           window.location.assign("/login");
           return Promise.reject(error);
         }
 
-        setAccessToken(token);
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       } catch (refreshError) {
@@ -160,7 +245,11 @@ export async function request<T>(path: string, config: AxiosRequestConfig = {}) 
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(formatErrorMessage(error.response?.data));
+      throw new ApiError(
+        formatErrorMessage(error.response?.data),
+        getErrorCode(error.response?.data),
+        getErrorDetails(error.response?.data),
+      );
     }
 
     throw error;

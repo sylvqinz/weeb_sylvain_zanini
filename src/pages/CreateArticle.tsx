@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Button from "../components/Button";
+import TextField from "../components/TextField";
 import { createArticle, fetchArticle, updateArticle } from "../lib/articles";
 
 export default function CreateArticle() {
@@ -104,37 +106,27 @@ export default function CreateArticle() {
       </div>
 
       <form className="space-y-8" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-purple-400 mb-2">Titre</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
-          />
-        </div>
+        <TextField label="Titre" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
 
-        <div>
-          <label className="block text-purple-400 mb-2">Contenu</label>
-          <textarea
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            className="w-full bg-transparent border-b border-purple-400 text-white outline-none py-2 resize-y focus:bg-purple-900/15 focus:border-purple-600 focus:shadow-[0_2px_0_0_#9333ea] transition"
-          />
-        </div>
+        <TextField
+          label="Contenu"
+          multiline
+          rows={10}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+          fieldClassName="resize-y"
+        />
 
         {message && <p className="text-sm text-purple-300">{message}</p>}
 
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-8 py-2 rounded-lg transition"
+          className="px-8"
         >
           {loading ? (isEditing ? "Modification..." : "Création...") : isEditing ? "Enregistrer" : "Publier"}
-        </button>
+        </Button>
       </form>
     </section>
   );

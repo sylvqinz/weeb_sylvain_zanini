@@ -39,18 +39,18 @@ export function getAdminUserId(user: AdminUser) {
 }
 
 export function fetchAdminUsers() {
-  return request<UsersResponse>("/api/admin/users/").then(normalizeUsers);
+  return request<UsersResponse>("/admin/users/").then(normalizeUsers);
 }
 
 export function validateAdminUser(userId: string) {
-  return request<AdminUser>(`/api/admin/users/${userId}/`, {
+  return request<AdminUser>(`/admin/users/${userId}/`, {
     method: "PATCH",
     data: { is_active: true },
   });
 }
 
 export function deactivateAdminUser(userId: string) {
-  return request<AdminUser>(`/api/admin/users/${userId}/`, {
+  return request<AdminUser>(`/admin/users/${userId}/`, {
     method: "PATCH",
     data: { is_active: false },
   });

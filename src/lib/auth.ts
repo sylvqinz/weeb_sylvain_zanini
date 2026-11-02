@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_URL, clearAccessToken, getAccessToken, publicPost, setAccessToken, api } from "./api";
+import { api, clearAccessToken, getAccessToken, publicPost, refreshStoredAccessToken, request, setAccessToken } from "./api";
 
 export type LoginPayload = {
   email: string;
@@ -24,10 +23,26 @@ export type PasswordResetConfirmPayload = {
   password: string;
 };
 
+export type UpdateProfilePayload = {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  current_password?: string;
+  password?: string;
+  password_confirm?: string;
+};
+
+export type ConfirmEmailChangePayload = {
+  token: string;
+  current_password: string;
+};
+
 type AuthResponse = {
   access_token?: unknown;
   access?: unknown;
   user?: unknown;
+  requires_2fa?: unknown;
+  two_factor_token?: unknown;
 };
 
 export type AuthUser = {
@@ -42,13 +57,39 @@ export type AuthUser = {
   is_superuser?: boolean;
   is_admin?: boolean;
   is_active?: boolean;
+  is_two_factor_enabled?: boolean;
   role?: string;
   [key: string]: unknown;
 };
 
 export type AuthSession = {
+  requiresTwoFactor: false;
   token: string;
   user: AuthUser | null;
+};
+
+export type TwoFactorChallenge = {
+  requiresTwoFactor: true;
+  twoFactorToken: string;
+  user: AuthUser | null;
+};
+
+export type LoginResult = AuthSession | TwoFactorChallenge;
+
+export type VerifyTwoFactorLoginPayload = {
+  two_factor_token: string;
+  code: string;
+};
+
+export type UpdateProfileResponse = {
+  message?: string;
+  user?: AuthUser;
+};
+
+export type TwoFactorSetup = {
+  message: string;
+  secret: string;
+  provisioning_uri: string;
 };
 
 export function extractAccessToken(data: AuthResponse) {
@@ -101,6 +142,14 @@ export async function fetchCurrentUser() {
   return response.data;
 }
 
+export async function updateProfile(payload: UpdateProfilePayload) {
+  return request<UpdateProfileResponse>("/users/", { method: "PATCH", data: payload });
+}
+
+export function confirmEmailChange(payload: ConfirmEmailChangePayload) {
+  return publicPost<UpdateProfileResponse>("/users/email-change/confirm/", payload);
+}
+
 async function resolveCurrentUser(fallback: AuthUser | null) {
   try {
     return await fetchCurrentUser();
@@ -110,29 +159,26 @@ async function resolveCurrentUser(fallback: AuthUser | null) {
 }
 
 export async function refreshAccessToken() {
-  try {
-    const response = await axios.post<AuthResponse>(
-      `${API_URL}/users/token/refresh/`,
-      {},
-      { withCredentials: true },
-    );
-    const token = extractAccessToken(response.data);
-
-    if (!token) {
-      clearAccessToken();
-      return null;
-    }
-
-    setAccessToken(token);
-    return token;
-  } catch {
-    clearAccessToken();
-    return null;
-  }
+  return refreshStoredAccessToken();
 }
 
 export async function login(payload: LoginPayload) {
   const data = await publicPost<AuthResponse>("/users/login/", payload);
+
+  if (data.requires_2fa === true) {
+    const twoFactorToken = data.two_factor_token;
+
+    if (typeof twoFactorToken !== "string" || !twoFactorToken.trim()) {
+      throw new Error("La vérification 2FA est requise, mais aucun jeton temporaire n'a été renvoyé.");
+    }
+
+    return {
+      requiresTwoFactor: true,
+      twoFactorToken,
+      user: extractAuthUser(data),
+    } satisfies TwoFactorChallenge;
+  }
+
   const token = extractAccessToken(data);
 
   if (!token) {
@@ -143,12 +189,31 @@ export async function login(payload: LoginPayload) {
   const user = await resolveCurrentUser(extractAuthUser(data) || getCurrentUserClaims());
 
   return {
+    requiresTwoFactor: false,
     token,
     user,
-  };
+  } satisfies AuthSession;
 }
 
-export async function register(payload: RegisterPayload) {
+export async function verifyTwoFactorLogin(payload: VerifyTwoFactorLoginPayload) {
+  const data = await publicPost<AuthResponse>("/users/2fa/verify-login/", payload);
+  const token = extractAccessToken(data);
+
+  if (!token) {
+    throw new Error("Vérification réussie, mais aucun token JWT n'a été renvoyé.");
+  }
+
+  setAccessToken(token);
+  const user = await resolveCurrentUser(extractAuthUser(data) || getCurrentUserClaims());
+
+  return {
+    requiresTwoFactor: false,
+    token,
+    user,
+  } satisfies AuthSession;
+}
+
+export async function register(payload: RegisterPayload): Promise<AuthSession | null> {
   const data = await publicPost<AuthResponse>("/users/register/", payload);
   const token = extractAccessToken(data);
 
@@ -160,6 +225,7 @@ export async function register(payload: RegisterPayload) {
 
   return token
     ? {
+        requiresTwoFactor: false,
         token,
         user,
       }
@@ -172,6 +238,18 @@ export function requestPasswordReset(payload: PasswordResetRequestPayload) {
 
 export function confirmPasswordReset(payload: PasswordResetConfirmPayload) {
   return publicPost<unknown>("/users/password-reset/confirm/", payload);
+}
+
+export async function setupTwoFactor() {
+  return request<TwoFactorSetup>("/users/2fa/setup/", { method: "POST" });
+}
+
+export async function confirmTwoFactor(code: string) {
+  await request("/users/2fa/confirm/", { method: "POST", data: { code } });
+}
+
+export async function disableTwoFactor(code: string) {
+  await request("/users/2fa/disable/", { method: "POST", data: { code } });
 }
 
 export async function logout() {
