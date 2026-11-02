@@ -3,6 +3,25 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../components/Button";
 import TextField from "../components/TextField";
 import { confirmPasswordReset, requestPasswordReset } from "../lib/auth";
+import { ApiError } from "../lib/api";
+
+function getResetErrorMessage(error: unknown) {
+  if (error instanceof ApiError) {
+    if (error.code === "WEAK_PASSWORD") {
+      return ["Mot de passe trop faible.", ...(error.details ?? [])].join(" ");
+    }
+
+    if (error.code === "PASSWORD_MISMATCH") {
+      return "Les mots de passe ne correspondent pas.";
+    }
+
+    if (error.code && /(TOKEN|UID|RESET_LINK)/.test(error.code) && /(INVALID|EXPIRED)/.test(error.code)) {
+      return "Ce lien de réinitialisation est invalide ou a expiré. Demandez un nouveau lien.";
+    }
+  }
+
+  return error instanceof Error ? error.message : "Impossible de contacter le serveur.";
+}
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -13,11 +32,16 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetComplete, setResetComplete] = useState(false);
 
-  // Le lien email contient uidb64 et token; sans eux, on affiche la demande d'email.
-  const uidb64 = searchParams.get("uidb64");
-  const token = searchParams.get("token");
+  // Sans parametres, la page permet de demander un nouveau lien par email.
+  const uidb64 = searchParams.get("uidb64")?.trim();
+  const token = searchParams.get("token")?.trim();
   const isConfirmMode = Boolean(uidb64 && token);
+  const hasResetParams = searchParams.has("uidb64") || searchParams.has("token");
+  const linkError = hasResetParams && !isConfirmMode
+    ? "Lien de réinitialisation incomplet ou invalide. Demandez un nouveau lien ci-dessous."
+    : "";
 
   useEffect(() => {
     return () => {
@@ -44,6 +68,7 @@ export default function ResetPassword() {
 
   async function handleConfirmSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading || resetComplete) return;
     setMessage("");
 
     if (password !== confirmPassword) {
@@ -59,8 +84,9 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      await confirmPasswordReset({ uidb64, token, password });
-      setMessage("Mot de passe réinitialisé avec succès.");
+      await confirmPasswordReset({ uidb64, token, password, password_confirm: confirmPassword });
+      setResetComplete(true);
+      setMessage("Mot de passe réinitialisé avec succès. Redirection vers la connexion...");
 
       if (redirectTimerRef.current) {
         clearTimeout(redirectTimerRef.current);
@@ -70,7 +96,7 @@ export default function ResetPassword() {
         navigate("/login");
       }, 800);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Impossible de contacter le serveur.");
+      setMessage(getResetErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -90,6 +116,8 @@ export default function ResetPassword() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              disabled={loading || resetComplete}
               required
               align="center"
             />
@@ -99,15 +127,17 @@ export default function ResetPassword() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              disabled={loading || resetComplete}
               required
               align="center"
             />
 
-            {message && <p className="text-sm text-purple-300">{message}</p>}
+            {message && <p role="status" className="text-sm text-purple-300">{message}</p>}
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || resetComplete}
               className="mt-4 px-10"
             >
               {loading ? "Modification..." : "Réinitialiser"}
@@ -124,7 +154,7 @@ export default function ResetPassword() {
               align="center"
             />
 
-            {message && <p className="text-sm text-purple-300">{message}</p>}
+            {(message || linkError) && <p role="status" className="text-sm text-purple-300">{message || linkError}</p>}
 
             <Button
               type="submit"
