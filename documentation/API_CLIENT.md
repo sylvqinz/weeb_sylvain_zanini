@@ -5,18 +5,17 @@ Le client API principal est defini dans `src/lib/api.ts`.
 ## URL de base
 
 ```ts
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+export const API_URL = import.meta.env.VITE_API_URL;
 ```
 
-Si `VITE_API_URL` n'est pas definie, le frontend utilise `http://localhost:8000`.
-
-La methode `replace(/\/+$/, "")` supprime les slashs en fin d'URL pour eviter les doubles slashs lors de la concatenation des chemins.
+`VITE_API_URL` doit etre definie au build et pointer vers la racine du backend.
+En staging : `https://weeb-backend-staging.onrender.com`, sans suffixe `/api`.
 
 ## Instance Axios
 
 ```ts
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 ```
@@ -37,7 +36,7 @@ Fonctions associees :
 
 Avant chaque requete, l'intercepteur lit `sessionStorage.access`.
 
-Si un token existe, il ajoute :
+Si un token existe et que la requete ne desactive pas le renouvellement automatique, il ajoute :
 
 ```txt
 Authorization: Bearer <token>
@@ -65,7 +64,10 @@ Si le refresh echoue :
 
 ## `publicPost`
 
-`publicPost` utilise `axios.post` directement, sans passer par l'intercepteur authentifie.
+`publicPost` utilise l'instance Axios commune avec `withCredentials: true`.
+Il desactive l'ajout du token et le renouvellement automatique pour les appels publics.
+Le renouvellement du token utilise egalement cette instance, sans relancer de
+renouvellement sur son propre echec, afin d'eviter une boucle.
 
 Il est utilise pour les endpoints publics comme :
 

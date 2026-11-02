@@ -272,6 +272,27 @@ La page `ResetPassword` a deux modes :
 - sans query params : demande d'email ;
 - avec `uidb64` et `token` : confirmation du nouveau mot de passe.
 
+Un lien avec un parametre manquant ou vide affiche une erreur et permet de
+demander un nouveau lien. La confirmation envoie via l'instance Axios commune :
+
+```ts
+{
+  uidb64: string;
+  token: string;
+  password: string;
+  password_confirm: string;
+}
+```
+
+Les mots de passe differents sont refuses avant l'appel API. Les erreurs de
+token invalide ou expire et `WEAK_PASSWORD` sont affichees, avec les details de
+validation du backend si disponibles. Apres succes, le formulaire est desactive
+et la page redirige vers `/login`.
+
+Sur Vercel, `vercel.json` renvoie les routes directes vers `index.html`, sans
+supprimer les query params. Le build utilise `/` comme base ; le workflow GitHub
+Pages conserve explicitement son sous-chemin via l'option `--base`.
+
 Endpoints utilises :
 
 ```txt

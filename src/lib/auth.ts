@@ -21,6 +21,7 @@ export type PasswordResetConfirmPayload = {
   uidb64: string;
   token: string;
   password: string;
+  password_confirm: string;
 };
 
 export type UpdateProfilePayload = {

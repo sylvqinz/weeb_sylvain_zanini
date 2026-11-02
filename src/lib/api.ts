@@ -1,15 +1,22 @@
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+export const API_URL = import.meta.env.VITE_API_URL;
+
+type SessionRequestConfig = AxiosRequestConfig & {
+  skipAuthRefresh?: boolean;
+};
+
+const publicRequestConfig: SessionRequestConfig = { skipAuthRefresh: true };
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
+  skipAuthRefresh?: boolean;
 };
 
 let refreshTokenRequest: Promise<string | null> | null = null;
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -32,8 +39,8 @@ function extractRefreshToken(data: { access?: unknown; access_token?: unknown })
 
 export function refreshStoredAccessToken() {
   if (!refreshTokenRequest) {
-    refreshTokenRequest = axios
-      .post<{ access?: unknown; access_token?: unknown }>(`${API_URL}/users/token/refresh/`, {}, { withCredentials: true })
+    refreshTokenRequest = api
+      .post<{ access?: unknown; access_token?: unknown }>("/users/token/refresh/", {}, publicRequestConfig)
       .then((response) => {
         const token = extractRefreshToken(response.data);
 
@@ -154,7 +161,7 @@ export function formatErrorMessage(data: unknown): string {
 
 export async function publicPost<T>(path: string, payload: object) {
   try {
-    const response = await axios.post<T>(`${API_URL}${path}`, payload, { withCredentials: true });
+    const response = await api.post<T>(path, payload, publicRequestConfig);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -176,7 +183,7 @@ export async function publicPost<T>(path: string, payload: object) {
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("access");
 
-  if (token) {
+  if (token && !(config as RetriableRequestConfig).skipAuthRefresh) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -192,15 +199,16 @@ api.interceptors.response.use(
 
     const originalRequest = error.config as RetriableRequestConfig | undefined;
 
-    if (!originalRequest) {
+    // Les appels publics et le refresh ne doivent pas relancer un refresh sur un 401.
+    if (!originalRequest || originalRequest.skipAuthRefresh) {
       return Promise.reject(error);
     }
 
     if (originalRequest.url?.includes("/users/token/refresh/")) {
       clearAccessToken();
 
-      if (window.location.pathname !== "/login") {
-        window.location.assign("/login");
+      if (window.location.pathname !== `${import.meta.env.BASE_URL}login`) {
+        window.location.assign(`${import.meta.env.BASE_URL}login`);
       }
 
       return Promise.reject(error);
@@ -214,7 +222,7 @@ api.interceptors.response.use(
         const token = await refreshStoredAccessToken();
 
         if (!token) {
-          window.location.assign("/login");
+          window.location.assign(`${import.meta.env.BASE_URL}login`);
           return Promise.reject(error);
         }
 
@@ -223,8 +231,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         clearAccessToken();
 
-        if (window.location.pathname !== "/login") {
-          window.location.assign("/login");
+        if (window.location.pathname !== `${import.meta.env.BASE_URL}login`) {
+          window.location.assign(`${import.meta.env.BASE_URL}login`);
         }
 
         return Promise.reject(refreshError);

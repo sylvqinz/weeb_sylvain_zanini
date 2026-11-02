@@ -13,16 +13,20 @@ Cette variable doit pointer vers l'API backend.
 Exemple :
 
 ```txt
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=https://weeb-backend-staging.onrender.com
 ```
 
-## Valeur par defaut
+## Configuration locale et deploiement
 
-Si `VITE_API_URL` n'est pas definie, `src/lib/api.ts` utilise :
+`VITE_API_URL` doit etre definie au moment du build. Le workflow GitHub Pages
+la configure explicitement avec l'URL de staging Render. Pour utiliser un backend local :
 
 ```txt
 http://localhost:8000
 ```
+
+Apres une modification de cette variable, redemarrer Vite en developpement ou
+reconstruire et redeployer le frontend en ligne.
 
 ## Pourquoi le prefixe `VITE_`
 
