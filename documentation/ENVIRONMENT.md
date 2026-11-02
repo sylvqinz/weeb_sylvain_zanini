@@ -18,8 +18,9 @@ VITE_API_URL=https://weeb-backend-staging.onrender.com
 
 ## Configuration locale et deploiement
 
-`VITE_API_URL` doit etre definie au moment du build. Le workflow GitHub Pages
-la configure explicitement avec l'URL de staging Render. Pour utiliser un backend local :
+`VITE_API_URL` doit etre definie au moment du build. `.env.production` configure
+l'URL de staging Render ; une variable definie dans Vercel est prioritaire.
+Pour utiliser un backend local :
 
 ```txt
 http://localhost:8000
@@ -54,3 +55,13 @@ Points a verifier cote backend :
 `VITE_API_URL` doit pointer vers la racine du backend, sans suffixe `/api`.
 Les appels utilisateurs, articles et contact utilisent directement cette base.
 Seuls les appels administrateurs ajoutent `/api/admin/` dans leur chemin.
+
+## URL publique du frontend
+
+Le frontend est heberge sur https://weeb-kappa.vercel.app/.
+Le backend doit autoriser exactement l'origine `https://weeb-kappa.vercel.app`
+dans sa configuration CORS avec credentials. Les liens d'email pour ce frontend
+doivent utiliser cette URL, notamment `/reset-password` et `/confirm-email-change`.
+
+Le workflow GitHub Actions execute le lint et le build. Le deploiement est gere
+par Vercel selon la configuration du projet Vercel.

@@ -290,8 +290,9 @@ validation du backend si disponibles. Apres succes, le formulaire est desactive
 et la page redirige vers `/login`.
 
 Sur Vercel, `vercel.json` renvoie les routes directes vers `index.html`, sans
-supprimer les query params. Le build utilise `/` comme base ; le workflow GitHub
-Pages conserve explicitement son sous-chemin via l'option `--base`.
+supprimer les query params. Le build utilise `/` comme base.
+Le lien de reset pour ce frontend est :
+`https://weeb-kappa.vercel.app/reset-password?uidb64=...&token=...`.
 
 Endpoints utilises :
 

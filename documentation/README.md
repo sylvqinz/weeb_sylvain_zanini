@@ -2,6 +2,8 @@
 
 Ce dossier documente le code frontend du projet Weeb.
 
+URL publique du frontend : https://weeb-kappa.vercel.app/
+
 Le frontend est une application React + TypeScript construite avec Vite, Tailwind CSS, React Router et Axios. Il consomme une API backend via `VITE_API_URL`, configuree au build (staging : `https://weeb-backend-staging.onrender.com`).
 
 ## Fichiers de documentation
