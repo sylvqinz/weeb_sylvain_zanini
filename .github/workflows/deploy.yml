@@ -1,4 +1,4 @@
-name: CI & Deploy
+name: Frontend CI
 
 on:
   push:
@@ -11,11 +11,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,25 +38,6 @@ jobs:
         run: npm run lint
 
       - name: Build project
-        run: npm run build -- --base=/weeb_sylvain_zanini/
+        run: npm run build
         env:
           VITE_API_URL: https://weeb-backend-staging.onrender.com
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
