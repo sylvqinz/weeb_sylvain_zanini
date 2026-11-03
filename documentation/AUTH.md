@@ -115,7 +115,9 @@ POST /users/register/
 
 Si le backend renvoie un token, l'utilisateur est connecte automatiquement.
 
-Si aucun token n'est renvoye, la fonction retourne `null` et la page `Signup` redirige vers `/login`.
+Si aucun token n'est renvoye, la fonction retourne `null`. La page `Signup`
+explique que le compte attend une validation administrateur. Le message reste
+affiche, sans redirection automatique, avec un bouton « Aller à la connexion ».
 
 ## Refresh session
 
