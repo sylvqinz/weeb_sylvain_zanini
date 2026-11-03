@@ -14,6 +14,20 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
 };
 
 let refreshTokenRequest: Promise<string | null> | null = null;
+let redirectingToLogin = false;
+
+function excludesAutomaticRefresh(config: RetriableRequestConfig) {
+  const pathname = new URL(config.url ?? "", config.baseURL ?? window.location.origin).pathname;
+  return config.skipAuthRefresh || /\/users\/(?:login|logout|token\/refresh)\/?$/.test(pathname);
+}
+
+function redirectToLogin() {
+  const loginPath = `${import.meta.env.BASE_URL}login`;
+  if (!redirectingToLogin && window.location.pathname !== loginPath) {
+    redirectingToLogin = true;
+    window.location.assign(loginPath);
+  }
+}
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -26,21 +40,22 @@ export function getAccessToken() {
 
 export function setAccessToken(token: string) {
   sessionStorage.setItem("access", token);
+  redirectingToLogin = false;
 }
 
 export function clearAccessToken() {
   sessionStorage.removeItem("access");
 }
 
-function extractRefreshToken(data: { access?: unknown; access_token?: unknown }) {
-  const token = data.access || data.access_token;
+function extractRefreshToken(data: { access?: unknown }) {
+  const token = data.access;
   return typeof token === "string" && token.trim() ? token : null;
 }
 
 export function refreshStoredAccessToken() {
   if (!refreshTokenRequest) {
     refreshTokenRequest = api
-      .post<{ access?: unknown; access_token?: unknown }>("/users/token/refresh/", {}, publicRequestConfig)
+      .post<{ access?: unknown }>("/users/token/refresh/", {}, { ...publicRequestConfig, withCredentials: true })
       .then((response) => {
         const token = extractRefreshToken(response.data);
 
@@ -181,10 +196,12 @@ export async function publicPost<T>(path: string, payload: object) {
 }
 
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("access");
+  const token = getAccessToken();
 
   if (token && !(config as RetriableRequestConfig).skipAuthRefresh) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.set("Authorization", `Bearer ${token}`);
+  } else {
+    config.headers.delete("Authorization");
   }
 
   return config;
@@ -197,49 +214,33 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const originalRequest = error.config as RetriableRequestConfig | undefined;
+    const originalRequest = (error.config ?? error.response.config) as RetriableRequestConfig | undefined;
 
-    // Les appels publics et le refresh ne doivent pas relancer un refresh sur un 401.
-    if (!originalRequest || originalRequest.skipAuthRefresh) {
+    if (
+      error.response.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      excludesAutomaticRefresh(originalRequest)
+    ) {
       return Promise.reject(error);
     }
 
-    if (originalRequest.url?.includes("/users/token/refresh/")) {
-      clearAccessToken();
+    originalRequest._retry = true;
 
-      if (window.location.pathname !== `${import.meta.env.BASE_URL}login`) {
-        window.location.assign(`${import.meta.env.BASE_URL}login`);
-      }
+    // Un autre 401 a pu deja renouveler le token pendant cette requete.
+    const currentToken = getAccessToken();
+    const failedAuthorization = originalRequest.headers.get("Authorization");
+    const token = currentToken && failedAuthorization !== `Bearer ${currentToken}`
+      ? currentToken
+      : await refreshStoredAccessToken();
 
+    if (!token) {
+      redirectToLogin();
       return Promise.reject(error);
     }
 
-    // Sur un 401, on tente une seule fois de recuperer un access token via le cookie refresh.
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const token = await refreshStoredAccessToken();
-
-        if (!token) {
-          window.location.assign(`${import.meta.env.BASE_URL}login`);
-          return Promise.reject(error);
-        }
-
-        originalRequest.headers.Authorization = `Bearer ${token}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        clearAccessToken();
-
-        if (window.location.pathname !== `${import.meta.env.BASE_URL}login`) {
-          window.location.assign(`${import.meta.env.BASE_URL}login`);
-        }
-
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
+    originalRequest.headers.set("Authorization", `Bearer ${token}`);
+    return api.request(originalRequest);
   },
 );
 
