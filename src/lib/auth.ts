@@ -17,13 +17,6 @@ export type PasswordResetRequestPayload = {
   email: string;
 };
 
-export type PasswordResetConfirmPayload = {
-  uidb64: string;
-  token: string;
-  password: string;
-  password_confirm: string;
-};
-
 export type UpdateProfilePayload = {
   first_name?: string;
   last_name?: string;
@@ -234,11 +227,7 @@ export async function register(payload: RegisterPayload): Promise<AuthSession | 
 }
 
 export function requestPasswordReset(payload: PasswordResetRequestPayload) {
-  return publicPost<unknown>("/users/password-reset/request/", payload);
-}
-
-export function confirmPasswordReset(payload: PasswordResetConfirmPayload) {
-  return publicPost<unknown>("/users/password-reset/confirm/", payload);
+  return publicPost<unknown>("/users/password-reset/request/", { email: payload.email });
 }
 
 export async function setupTwoFactor() {

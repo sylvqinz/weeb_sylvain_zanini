@@ -44,23 +44,36 @@ Authorization: Bearer <token>
 
 ## Intercepteur de reponse
 
-Si une reponse retourne `401`, le client tente de rafraichir le token via :
+Si une requete protegee retourne `401`, le client tente de rafraichir le token via :
 
 ```txt
 POST /users/token/refresh/
 ```
 
+Les routes login, logout et token/refresh ainsi que les appels publics sont
+exclus du renouvellement automatique. Le refresh utilise `withCredentials: true`
+et lit le nouveau token dans `response.data.access`.
+
 Si le refresh fonctionne :
 
-- le nouveau token est stocke ;
-- la requete originale est relancee.
+- le nouveau token est stocke dans `sessionStorage.access` ;
+- le header `Authorization` est remplace ;
+- la requete originale est relancee une seule fois, avec le marqueur `_retry`.
+
+Un nouveau `401` sur la requete rejouee est transmis a l'appelant sans boucle
+ni redirection. Les erreurs autres que `401` ne declenchent pas de refresh.
 
 Les refresh concurrents partagent la meme promesse interne pour eviter de declencher plusieurs appels simultanes.
+Un `401` tardif utilise le token deja renouvele si celui de la requete initiale
+est different du token courant.
 
 Si le refresh echoue :
 
 - le token local est supprime ;
-- l'utilisateur est redirige vers `/login`.
+- l'utilisateur est redirige une seule fois vers `/login` pour les requetes protegees.
+
+Une tentative de restauration de session anonyme au chargement qui echoue ne
+redirige pas a elle seule vers la connexion.
 
 ## `publicPost`
 
