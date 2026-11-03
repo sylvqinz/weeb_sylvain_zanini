@@ -60,8 +60,9 @@ Seuls les appels administrateurs ajoutent `/api/admin/` dans leur chemin.
 
 Le frontend est heberge sur https://weeb-kappa.vercel.app/.
 Le backend doit autoriser exactement l'origine `https://weeb-kappa.vercel.app`
-dans sa configuration CORS avec credentials. Les liens d'email pour ce frontend
-doivent utiliser cette URL, notamment `/reset-password` et `/confirm-email-change`.
+dans sa configuration CORS avec credentials. Les liens de confirmation de
+changement d'email utilisent `/confirm-email-change` sur ce frontend.
+Les emails de reset password renvoient vers la page HTML commune du backend.
 
 Le workflow GitHub Actions execute le lint et le build. Le deploiement est gere
 par Vercel selon la configuration du projet Vercel.

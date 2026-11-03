@@ -267,39 +267,18 @@ useAuth must be used inside AuthProvider.
 
 ## Reset Password
 
-La page `ResetPassword` a deux modes :
+La route publique `/reset-password` conserve uniquement le formulaire de demande
+par email. Elle appelle `POST /users/password-reset/request/` avec `{ email }`,
+via l'instance Axios commune avec `withCredentials: true`, sans `frontend_url`.
 
-- sans query params : demande d'email ;
-- avec `uidb64` et `token` : confirmation du nouveau mot de passe.
+Apres succes, le message est toujours : « Si un compte est associé à cet email,
+vous recevrez des instructions. » Les erreurs affichent un message generique.
 
-Un lien avec un parametre manquant ou vide affiche une erreur et permet de
-demander un nouveau lien. La confirmation envoie via l'instance Axios commune :
-
-```ts
-{
-  uidb64: string;
-  token: string;
-  password: string;
-  password_confirm: string;
-}
-```
-
-Les mots de passe differents sont refuses avant l'appel API. Les erreurs de
-token invalide ou expire et `WEAK_PASSWORD` sont affichees, avec les details de
-validation du backend si disponibles. Apres succes, le formulaire est desactive
-et la page redirige vers `/login`.
-
-Sur Vercel, `vercel.json` renvoie les routes directes vers `index.html`, sans
-supprimer les query params. Le build utilise `/` comme base.
-Le lien de reset pour ce frontend est :
-`https://weeb-kappa.vercel.app/reset-password?uidb64=...&token=...`.
-
-Endpoints utilises :
-
-```txt
-POST /users/password-reset/request/
-POST /users/password-reset/confirm/
-```
+Les nouveaux emails renvoient directement vers une page HTML commune servie
+par le backend, qui gere la saisie et la confirmation du nouveau mot de passe.
+Le frontend ne traite plus les parametres `uidb64` et `token` et n'appelle plus
+l'endpoint de confirmation. La route React reste accessible pour compatibilite
+et pour demander un nouveau lien.
 
 ## Logout
 
